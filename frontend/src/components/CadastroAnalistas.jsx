@@ -7,7 +7,7 @@ function CadastroAnalistas() {
   const [editId, setEditId] = useState(null);
 
   const fetchAnalistas = () => {
-    fetch('http://localhost:3000/api/analistas')
+    fetch(import.meta.env.VITE_API_URL + '/api/analistas')
       .then(res => res.json())
       .then(data => setAnalistas(data));
   };
@@ -43,7 +43,7 @@ function CadastroAnalistas() {
 
   const handleDelete = (id) => {
     if (window.confirm('Tem certeza que deseja excluir este analista? A ação não pode ser desfeita.')) {
-        fetch(`http://localhost:3000/api/analistas/${id}`, { method: 'DELETE' })
+        fetch(`${import.meta.env.VITE_API_URL}/api/analistas/${id}`, { method: 'DELETE' })
         .then(() => fetchAnalistas());
     }
   }
