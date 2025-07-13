@@ -9,7 +9,7 @@ import Relatorios from './components/Relatorios';
 import CadastroConsultores from './components/CadastroConsultores';
 import CadastroAnalistas from './components/CadastroAnalistas';
 
-const socket = io('http://localhost:3000');
+const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000');
 
 function App() {
   const [estado, setEstado] = useState({ 

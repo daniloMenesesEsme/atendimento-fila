@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Modal, Button, Form } from 'react-bootstrap'; // Importar Modal, Button e Form
 
 function EntradaFila({ socket }) {
   const [analistas, setAnalistas] = useState([]);
   const [selectedAnalista, setSelectedAnalista] = useState('');
+  const [showModal, setShowModal] = useState(false); // Estado para controlar a visibilidade do modal
+  const [caseNumber, setCaseNumber] = useState(''); // Estado para o número do caso
 
   useEffect(() => {
     fetch('http://localhost:3000/api/analistas')
@@ -10,20 +13,34 @@ function EntradaFila({ socket }) {
       .then(data => setAnalistas(data));
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleShowModal = (e) => {
     e.preventDefault();
     if (selectedAnalista) {
-      socket.emit('entrarFila', selectedAnalista);
-      alert('Você entrou na fila! Aguarde para ser atendido.');
+      setShowModal(true);
     } else {
       alert('Por favor, selecione seu nome para entrar na fila.');
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setCaseNumber(''); // Limpa o campo do número do caso ao fechar o modal
+  };
+
+  const handleConfirmEntry = () => {
+    if (caseNumber) {
+      socket.emit('entrarFila', { analistaId: selectedAnalista, caseNumber: caseNumber });
+      alert('Você entrou na fila! Aguarde para ser atendido. Caso: ' + caseNumber);
+      handleCloseModal();
+    } else {
+      alert('Por favor, insira o número do caso.');
     }
   };
 
   return (
     <div className="card mt-4">
       <h2>Entrar na Fila de Atendimento</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleShowModal}> {/* Alterado para abrir o modal */}
         <div className="input-group">
           <select 
             className="form-select"
@@ -39,6 +56,33 @@ function EntradaFila({ socket }) {
           <button type="submit" className="btn btn-success">Entrar na Fila</button>
         </div>
       </form>
+
+      {/* Modal para inserir o número do caso */}
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Informar Número do Caso</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3">
+            <Form.Label>Número do Caso Salesforce:</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ex: 00123456"
+              value={caseNumber}
+              onChange={(e) => setCaseNumber(e.target.value)}
+              required
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Cancelar
+          </Button>
+          <Button variant="primary" onClick={handleConfirmEntry}>
+            Confirmar Entrada
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

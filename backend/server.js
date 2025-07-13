@@ -28,7 +28,7 @@ const pool = mysql.createPool({
 const emitirEstadoAtual = async () => {
   try {
     const [fila] = await pool.query(`
-        SELECT a.id, an.nome as nome_atendente, a.chegada_em, a.prioridade
+        SELECT a.id, an.nome as nome_atendente, a.chegada_em, a.prioridade, a.case_number
         FROM atendimentos a
         JOIN analistas_atendimento an ON a.analista_id = an.id
         WHERE a.status = 'AGUARDANDO' ORDER BY a.prioridade DESC, a.chegada_em ASC
@@ -49,9 +49,10 @@ const emitirEstadoAtual = async () => {
 
 io.on('connection', (socket) => {
   emitirEstadoAtual();
-  socket.on('entrarFila', async (analista_id) => {
+  socket.on('entrarFila', async (data) => {
     try {
-      await pool.query("INSERT INTO atendimentos (analista_id) VALUES (?)", [analista_id]);
+      const { analistaId, caseNumber } = data;
+      await pool.query("INSERT INTO atendimentos (analista_id, case_number) VALUES (?, ?)", [analistaId, caseNumber]);
       emitirEstadoAtual();
     } catch (error) { console.error(error); }
   });
