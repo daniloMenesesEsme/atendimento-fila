@@ -8,7 +8,7 @@ function CadastroConsultores() {
   const [editId, setEditId] = useState(null);
 
   const fetchConsultores = () => {
-    fetch('http://localhost:3000/api/consultores')
+    fetch(import.meta.env.VITE_API_URL + '/api/consultores')
       .then(res => res.json())
       .then(data => setConsultores(data));
   };
@@ -24,7 +24,7 @@ function CadastroConsultores() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const url = editId ? `http://localhost:3000/api/consultores/${editId}` : 'http://localhost:3000/api/consultores';
+    const url = editId ? `${import.meta.env.VITE_API_URL}/api/consultores/${editId}` : `${import.meta.env.VITE_API_URL}/api/consultores`;
     const method = editId ? 'PUT' : 'POST';
 
     fetch(url, {

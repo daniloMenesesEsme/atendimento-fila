@@ -22,7 +22,7 @@ function CadastroAnalistas() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const url = editId ? `http://localhost:3000/api/analistas/${editId}` : 'http://localhost:3000/api/analistas';
+    const url = editId ? `${import.meta.env.VITE_API_URL}/api/analistas/${editId}` : `${import.meta.env.VITE_API_URL}/api/analistas`;
     const method = editId ? 'PUT' : 'POST';
 
     fetch(url, {
