@@ -9,7 +9,8 @@ import Relatorios from './components/Relatorios';
 import CadastroConsultores from './components/CadastroConsultores';
 import CadastroAnalistas from './components/CadastroAnalistas';
 
-const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000');
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const socket = io(apiUrl);
 
 function App() {
   const [estado, setEstado] = useState({ 
@@ -21,7 +22,7 @@ function App() {
   const [dbStatus, setDbStatus] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/health')
+    fetch(`${apiUrl}/api/health`)
       .then(res => res.ok)
       .then(status => setDbStatus(status))
       .catch(() => setDbStatus(false));
