@@ -32,6 +32,7 @@ function EntradaFila({ socket }) {
       socket.emit('entrarFila', { analistaId: selectedAnalista, caseNumber: caseNumber });
       alert('Você entrou na fila! Aguarde para ser atendido. Caso: ' + caseNumber);
       handleCloseModal();
+      setSelectedAnalista(''); // Limpa o campo de seleção do analista
     } else {
       alert('Por favor, insira o número do caso.');
     }

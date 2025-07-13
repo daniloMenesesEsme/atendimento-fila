@@ -129,3 +129,32 @@ h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, i
 .relatorios th:first-child {
   padding-left: 20px; /* Aumenta o espaço interno à esquerda */
 }
+
+/* Sobrescrita de estilos para o Modal */
+.modal-content {
+  background-color: #f8f9fa !important; /* Fundo claro para o conteúdo do modal */
+  border: 1px solid #dee2e6 !important;
+}
+
+.modal-header, .modal-footer {
+  border-color: #dee2e6 !important;
+}
+
+.modal-title, .modal-body, .modal-body label {
+  color: #212529 !important; /* Texto escuro para o modal */
+}
+
+.modal-body .form-control {
+  background-color: #FFFFFF !important; /* Fundo branco para inputs no modal */
+  color: #212529 !important; /* Texto preto para inputs no modal */
+  border-color: #ced4da !important;
+}
+
+.modal-body .form-control::placeholder {
+  color: #6c757d !important; /* Placeholder cinza escuro */
+}
+
+.modal-body .form-control:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  border-color: #86b7fe !important;
+}
