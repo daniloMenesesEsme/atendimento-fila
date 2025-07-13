@@ -46,7 +46,7 @@ function CadastroConsultores() {
 
   const handleDelete = (id) => {
     if (window.confirm('Tem certeza que deseja excluir este consultor?')) {
-        fetch(`http://localhost:3000/api/consultores/${id}`, { method: 'DELETE' })
+        fetch(`${import.meta.env.VITE_API_URL}/api/consultores/${id}`, { method: 'DELETE' })
         .then(() => fetchConsultores());
     }
   }
