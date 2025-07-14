@@ -40,7 +40,7 @@ function Dashboard({ socket, estado }) {
     const newPriority = prompt(`Definir nova prioridade para o atendimento ${id} (atual: ${currentPriority}).\n\nUm número maior significa maior prioridade.`, currentPriority);
     if (newPriority !== null && !isNaN(newPriority) && newPriority !== '') {
       try {
-        const response = await fetch(`http://localhost:3000/api/atendimentos/${id}/prioridade`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/atendimentos/${id}/prioridade`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
