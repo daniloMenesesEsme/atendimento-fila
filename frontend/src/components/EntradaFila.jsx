@@ -8,7 +8,7 @@ function EntradaFila({ socket }) {
   const [caseNumber, setCaseNumber] = useState(''); // Estado para o número do caso
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/analistas')
+    fetch(import.meta.env.VITE_API_URL + '/api/analistas')
       .then(res => res.json())
       .then(data => setAnalistas(data));
   }, []);
