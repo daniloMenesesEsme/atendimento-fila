@@ -17,7 +17,7 @@ function Relatorios() {
       dataFim: dataFimFilter,
     }).toString();
 
-    fetch(`http://localhost:3000/api/relatorios/atendimentos?${queryParams}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/relatorios/atendimentos?${queryParams}`)
       .then(res => res.json())
       .then(data => setAtendimentos(data))
       .catch(err => console.error("Erro ao buscar relatórios:", err));
