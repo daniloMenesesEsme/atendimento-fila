@@ -1,6 +1,6 @@
 
 import PropTypes from 'prop-types';
-import './Dashboard.css';
+
 
 const PainelConsultor = ({ socket, estado }) => {
   const atenderProximo = () => {

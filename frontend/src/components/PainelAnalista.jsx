@@ -1,7 +1,7 @@
 
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import './Dashboard.css';
+
 
 const PainelAnalista = ({ socket, estado }) => {
 
