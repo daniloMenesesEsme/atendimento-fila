@@ -5,5 +5,7 @@
       "destination": "/index.html"
     }
   ],
-  "root": "frontend"
+  "installCommand": "npm install --prefix frontend",
+  "buildCommand": "npm run build --prefix frontend",
+  "outputDirectory": "frontend/dist"
 }
