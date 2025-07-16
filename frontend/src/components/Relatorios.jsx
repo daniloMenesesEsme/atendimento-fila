@@ -140,12 +140,12 @@ function Relatorios() {
         <table>
           <thead>
             <tr>
-              <th>Atendente</th>
-              <th>Consultor</th>
-              <th>Nº do Caso</th>
-              <th>Chegada na Fila</th>
-              <th>Início do Atendimento</th>
-              <th>Fim do Atendimento</th>
+              <th style={{ width: '20%' }}>Atendente</th>
+              <th style={{ width: '20%' }}>Consultor</th>
+              <th style={{ width: '15%' }}>Nº do Caso</th>
+              <th style={{ width: '15%' }}>Chegada na Fila</th>
+              <th style={{ width: '15%' }}>Início do Atendimento</th>
+              <th style={{ width: '15%' }}>Fim do Atendimento</th>
             </tr>
           </thead>
           <tbody>
