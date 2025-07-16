@@ -5,7 +5,14 @@
       "destination": "/index.html"
     }
   ],
-  "installCommand": "npm install --prefix frontend",
-  "buildCommand": "npm run build --prefix frontend",
-  "outputDirectory": "frontend/dist"
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "npm run build",
+        "installCommand": "npm install"
+      }
+    }
+  ]
 }
