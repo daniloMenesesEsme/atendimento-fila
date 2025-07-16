@@ -36,9 +36,9 @@ const PainelAnalista = ({ socket, estado }) => {
       <div className="fila-section">
         <h2>Fila de Espera</h2>
         <ul className="list-group">
-          {estado.fila.map((item) => (
+          {estado.fila.map((item, index) => (
             <li key={item.id} className="list-group-item">
-              {item.nome_analista}
+              {index + 1}. {item.nome_analista} {item.case_number && `(Caso: ${item.case_number})`}
             </li>
           ))}
         </ul>
