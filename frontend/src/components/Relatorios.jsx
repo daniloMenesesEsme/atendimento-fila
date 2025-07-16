@@ -59,8 +59,9 @@ function Relatorios() {
       const table = tempElement.querySelector('table');
       if (table) {
         table.style.width = '100%';
-        table.style.borderCollapse = 'collapse';
-        table.style.marginTop = '15px';
+        table.style.borderCollapse = 'separate';
+        table.style.borderSpacing = '0 10px';
+        table.style.marginTop = '20px';
         table.style.textAlign = 'left'; // Alinha o texto à esquerda para melhor leitura no PDF
 
         const ths = table.querySelectorAll('th');
@@ -137,7 +138,7 @@ function Relatorios() {
       {/* ÁREA DO RELATÓRIO PARA EXPORTAÇÃO */}
       <div ref={reportTableRef}>
         <h2>Relatório de Atendimentos Finalizados</h2>
-        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 10px', textAlign: 'left', marginTop: '20px' }}>
           <thead>
             <tr>
               <th>Atendente</th>
