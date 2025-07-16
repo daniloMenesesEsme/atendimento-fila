@@ -28,14 +28,14 @@ const pool = mysql.createPool({
 const emitirEstadoAtual = async () => {
   try {
     const [fila] = await pool.query(`
-        SELECT a.id, an.nome as nome_atendente, a.chegada_em, a.prioridade, a.case_number
+        SELECT a.id, an.nome as nome_analista, a.chegada_em, a.prioridade, a.case_number
         FROM atendimentos a
         JOIN analistas_atendimento an ON a.analista_id = an.id
         WHERE a.status = 'AGUARDANDO' ORDER BY a.prioridade DESC, a.chegada_em ASC
     `);
     const [consultores] = await pool.query("SELECT * FROM consultores ORDER BY nome ASC");
     const [emAtendimento] = await pool.query(`
-      SELECT a.id, an.nome as nome_franqueado, c.nome as nome_consultor, a.inicio_em, c.id as consultor_id
+      SELECT a.id, an.nome as nome_analista, c.nome as nome_consultor, a.inicio_em, c.id as consultor_id
       FROM atendimentos a
       JOIN consultores c ON a.consultor_id = c.id
       JOIN analistas_atendimento an ON a.analista_id = an.id
