@@ -142,6 +142,7 @@ function Relatorios() {
             <tr>
               <th>Atendente</th>
               <th>Consultor</th>
+              <th>Nº do Caso</th>
               <th>Chegada na Fila</th>
               <th>Início do Atendimento</th>
               <th>Fim do Atendimento</th>
@@ -152,6 +153,7 @@ function Relatorios() {
               <tr key={a.id}>
                 <td>{a.nome_atendente}</td>
                 <td>{a.nome_consultor}</td>
+                <td>{a.case_number || '-'}</td>
                 <td>{formatarData(a.chegada_em)}</td>
                 <td>{formatarData(a.inicio_em)}</td>
                 <td>{formatarData(a.finalizado_em)}</td>

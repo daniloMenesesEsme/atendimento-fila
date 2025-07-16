@@ -136,7 +136,7 @@ app.delete('/api/analistas/:id', async (req, res) => {
 app.get('/api/relatorios/atendimentos', async (req, res) => {
     const { franqueado, consultor, dataInicio, dataFim } = req.query;
     let query = `
-        SELECT a.id, an.nome as nome_atendente, c.nome as nome_consultor, a.chegada_em, a.inicio_em, a.finalizado_em
+        SELECT a.id, an.nome as nome_atendente, c.nome as nome_consultor, a.chegada_em, a.inicio_em, a.finalizado_em, a.case_number
         FROM atendimentos a
         LEFT JOIN consultores c ON a.consultor_id = c.id
         JOIN analistas_atendimento an ON a.analista_id = an.id
