@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import io from 'socket.io-client';
 import './App.css';
 
 import Navbar from './components/Navbar';
 import EntradaFila from './components/EntradaFila';
-import Dashboard from './components/Dashboard';
+import PainelAnalista from './components/PainelAnalista';
+import PainelConsultor from './components/PainelConsultor';
 import Relatorios from './components/Relatorios';
 import CadastroConsultores from './components/CadastroConsultores';
 import CadastroAnalistas from './components/CadastroAnalistas';
@@ -18,8 +20,8 @@ function App() {
     consultores: [], 
     emAtendimento: [] 
   });
-  const [view, setView] = useState('dashboard');
   const [dbStatus, setDbStatus] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     fetch(`${apiUrl}/api/health`)
@@ -38,35 +40,41 @@ function App() {
     };
   }, []);
 
-  const renderView = () => {
-    switch(view) {
-      case 'relatorios':
-        return <Relatorios />;
-      case 'cadastroConsultores':
-        return <CadastroConsultores />;
-      case 'cadastroAnalistas':
-        return <CadastroAnalistas />;
-      case 'dashboard':
-      default:
-        return (
-          <>
-            <EntradaFila socket={socket} />
-            <Dashboard socket={socket} estado={estado} />
-          </>
-        );
-    }
-  };
+  const isPainelAnalista = location.pathname === '/painel-analista';
 
   return (
     <>
-      <Navbar setView={setView} />
+      {!isPainelAnalista && <Navbar />}
+      
       <div className="status-container">
           <span className={`status-dot ${dbStatus ? 'status-ok' : 'status-error'}`}></span>
           {dbStatus ? 'Conectado' : 'Desconectado'}
       </div>
+
       <div className="app-main-content">
         <div className="container-fluid">
-          {renderView()}
+          <Routes>
+            {/* Rota Principal - Painel do Consultor */}
+            <Route path="/" element={
+              <>
+                <EntradaFila socket={socket} />
+                <PainelConsultor socket={socket} estado={estado} />
+              </>
+            } />
+            
+            {/* Rotas acessíveis pela Navbar */}
+            <Route path="/relatorios" element={<Relatorios />} />
+            <Route path="/cadastro-consultores" element={<CadastroConsultores />} />
+            <Route path="/cadastro-analistas" element={<CadastroAnalistas />} />
+
+            {/* Rota exclusiva para o Painel do Analista */}
+            <Route path="/painel-analista" element={
+              <>
+                <EntradaFila socket={socket} />
+                <PainelAnalista socket={socket} estado={estado} />
+              </> 
+            }/>
+          </Routes>
         </div>
       </div>
     </>

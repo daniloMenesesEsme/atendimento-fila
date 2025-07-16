@@ -47,32 +47,60 @@ const emitirEstadoAtual = async () => {
   }
 };
 
+const analistasSockets = {};
+
 io.on('connection', (socket) => {
   emitirEstadoAtual();
+
   socket.on('entrarFila', async (data) => {
     try {
       const { analistaId, caseNumber } = data;
+      analistasSockets[analistaId] = socket.id; // Armazena o socket do analista
       await pool.query("INSERT INTO atendimentos (analista_id, case_number) VALUES (?, ?)", [analistaId, caseNumber]);
       emitirEstadoAtual();
     } catch (error) { console.error(error); }
   });
+
   socket.on('atenderProximo', async (consultor_id) => {
     try {
       const [fila] = await pool.query("SELECT * FROM atendimentos WHERE status = 'AGUARDANDO' ORDER BY prioridade DESC, chegada_em ASC LIMIT 1");
       if (fila.length > 0) {
         const proximo = fila[0];
+        const analistaId = proximo.analista_id;
+        const socketIdAnalista = analistasSockets[analistaId];
+
+        // Notifica o analista específico
+        if (socketIdAnalista) {
+          const [consultor] = await pool.query("SELECT nome FROM consultores WHERE id = ?", [consultor_id]);
+          if (consultor.length > 0) {
+            io.to(socketIdAnalista).emit('atendimento-iniciado', { consultor: consultor[0] });
+          }
+        }
+
         await pool.query("UPDATE atendimentos SET consultor_id = ?, status = 'EM_ATENDIMENTO', inicio_em = NOW() WHERE id = ?", [consultor_id, proximo.id]);
-        await pool.query("UPDATE consultores SET disponivel = FALSE WHERE id = ?", [consultor_id]);
+        await pool.query("UPDATE consultores SET disponivel = false WHERE id = ?", [consultor_id]);
         emitirEstadoAtual();
       }
     } catch (error) { console.error(error); }
   });
+
   socket.on('finalizarAtendimento', async ({atendimento_id, consultor_id}) => {
     try {
         await pool.query("UPDATE atendimentos SET status = 'FINALIZADO', finalizado_em = NOW() WHERE id = ?", [atendimento_id]);
-        await pool.query("UPDATE consultores SET disponivel = TRUE WHERE id = ?", [consultor_id]);
+        await pool.query("UPDATE consultores SET disponivel = true WHERE id = ?", [consultor_id]);
         emitirEstadoAtual();
     } catch (error) { console.error(error); }
+  });
+
+  socket.on('disconnect', () => {
+    // Limpa o socket do analista quando ele se desconectar
+    for (const analistaId in analistasSockets) {
+      if (analistasSockets[analistaId] === socket.id) {
+        delete analistasSockets[analistaId];
+        console.log(`Socket do analista ${analistaId} removido.`);
+        break;
+      }
+    }
   });
 });
 
