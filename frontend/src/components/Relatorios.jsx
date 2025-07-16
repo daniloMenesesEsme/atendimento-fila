@@ -137,15 +137,15 @@ function Relatorios() {
       {/* ÁREA DO RELATÓRIO PARA EXPORTAÇÃO */}
       <div ref={reportTableRef}>
         <h2>Relatório de Atendimentos Finalizados</h2>
-        <table style={{ tableLayout: 'fixed', width: '100%' }}>
+        <table>
           <thead>
             <tr>
-              <th style={{ width: '8%' }}>Atendente</th>
-              <th style={{ width: '8%' }}>Consultor</th>
-              <th style={{ width: '9%' }}>Nº do Caso</th>
-              <th style={{ width: '25%' }}>Chegada na Fila</th>
-              <th style={{ width: '25%' }}>Início do Atendimento</th>
-              <th style={{ width: '25%' }}>Fim do Atendimento</th>
+              <th style={{ width: '15%' }}>Atendente</th>
+              <th style={{ width: '15%' }}>Consultor</th>
+              <th style={{ width: '15%' }}>Nº do Caso</th>
+              <th style={{ width: '18%' }}>Chegada na Fila</th>
+              <th style={{ width: '18%' }}>Início do Atendimento</th>
+              <th style={{ width: '19%' }}>Fim do Atendimento</th>
             </tr>
           </thead>
           <tbody>
