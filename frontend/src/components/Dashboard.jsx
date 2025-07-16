@@ -72,7 +72,7 @@ function Dashboard({ socket, estado }) {
           <ul className="list-group list-group-flush">
             {fila.map((p, index) => (
               <li key={p.id} className="list-group-item d-flex justify-content-between align-items-center">
-                <span>{index + 1}. {p.nome_atendente} {p.case_number && `(Caso: ${p.case_number})`}</span>
+                <span>{index + 1}. {p.nome_analista} {p.case_number && `(Caso: ${p.case_number})`}</span>
                 <div>
                   <button onClick={() => handlePriorizarAtendimento(p.id, p.prioridade)} className="btn btn-outline-warning btn-sm me-2">Priorizar</button>
                   <button onClick={() => handleRemoverDaFila(p.id)} className="btn btn-outline-danger btn-sm">Remover</button>
@@ -111,7 +111,7 @@ function Dashboard({ socket, estado }) {
                                     ) : (
                                         meuAtendimento ? (
                                         <div className="atendimento-info">
-                                            <p>Atendendo: <strong>{meuAtendimento.nome_franqueado}</strong></p>
+                                            <p>Atendendo: <strong>{meuAtendimento.nome_analista}</strong></p>
                                             <a href={meetLink} target="_blank" rel="noopener noreferrer" className="btn btn-info btn-sm">Entrar no Meet</a>
                                             <button onClick={() => handleFinalizar(meuAtendimento)} className="btn btn-danger btn-sm ms-2">
                                                 Finalizar
