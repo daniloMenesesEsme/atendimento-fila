@@ -60,7 +60,7 @@ function Relatorios() {
       if (table) {
         table.style.width = '100%';
         table.style.borderCollapse = 'collapse';
-        table.style.marginTop = '20px';
+        table.style.marginTop = '15px';
         table.style.textAlign = 'left'; // Alinha o texto à esquerda para melhor leitura no PDF
 
         const ths = table.querySelectorAll('th');
@@ -137,15 +137,15 @@ function Relatorios() {
       {/* ÁREA DO RELATÓRIO PARA EXPORTAÇÃO */}
       <div ref={reportTableRef}>
         <h2>Relatório de Atendimentos Finalizados</h2>
-        <table>
+        <table style={{ tableLayout: 'fixed', width: '100%' }}>
           <thead>
             <tr>
-              <th style={{ width: '10%' }}>Atendente</th>
-              <th style={{ width: '10%' }}>Consultor</th>
-              <th style={{ width: '10%' }}>Nº do Caso</th>
-              <th style={{ width: '23%' }}>Chegada na Fila</th>
-              <th style={{ width: '23%' }}>Início do Atendimento</th>
-              <th style={{ width: '24%' }}>Fim do Atendimento</th>
+              <th style={{ width: '8%' }}>Atendente</th>
+              <th style={{ width: '8%' }}>Consultor</th>
+              <th style={{ width: '9%' }}>Nº do Caso</th>
+              <th style={{ width: '25%' }}>Chegada na Fila</th>
+              <th style={{ width: '25%' }}>Início do Atendimento</th>
+              <th style={{ width: '25%' }}>Fim do Atendimento</th>
             </tr>
           </thead>
           <tbody>
