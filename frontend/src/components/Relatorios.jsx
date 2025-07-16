@@ -23,12 +23,23 @@ function Relatorios() {
     }).toString();
 
     fetch(`${import.meta.env.VITE_API_URL}/api/relatorios/atendimentos?${queryParams}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(errorData => {
+            throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
+          });
+        }
+        return res.json();
+      })
       .then(data => {
         setAtendimentos(data.data);
         setTotalItems(data.total);
       })
-      .catch(err => console.error("Erro ao buscar relatórios:", err));
+      .catch(err => {
+        console.error("Erro ao buscar relatórios:", err.message);
+        setAtendimentos([]); // Limpa atendimentos em caso de erro
+        setTotalItems(0);
+      });
   };
 
   useEffect(() => {
