@@ -7,6 +7,9 @@ function Relatorios() {
   const [consultorFilter, setConsultorFilter] = useState('');
   const [dataInicioFilter, setDataInicioFilter] = useState('');
   const [dataFimFilter, setDataFimFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10); // Você pode tornar isso configurável se quiser
+  const [totalItems, setTotalItems] = useState(0);
   const reportTableRef = useRef(null);
 
   const fetchRelatorios = () => {
@@ -15,17 +18,22 @@ function Relatorios() {
       consultor: consultorFilter,
       dataInicio: dataInicioFilter,
       dataFim: dataFimFilter,
+      page: currentPage,
+      limit: itemsPerPage,
     }).toString();
 
     fetch(`${import.meta.env.VITE_API_URL}/api/relatorios/atendimentos?${queryParams}`)
       .then(res => res.json())
-      .then(data => setAtendimentos(data))
+      .then(data => {
+        setAtendimentos(data.data);
+        setTotalItems(data.total);
+      })
       .catch(err => console.error("Erro ao buscar relatórios:", err));
   };
 
   useEffect(() => {
     fetchRelatorios();
-  }, []);
+  }, [currentPage]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -162,6 +170,26 @@ function Relatorios() {
             ))}
           </tbody>
         </table>
+
+        {/* Controles de Paginação */}
+        <div className="pagination-controls mt-3">
+          <button
+            className="btn btn-secondary me-2"
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Anterior
+          </button>
+          <span>Página {currentPage} de {Math.ceil(totalItems / itemsPerPage)}</span>
+          <button
+            className="btn btn-secondary ms-2"
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(totalItems / itemsPerPage)))}
+            disabled={currentPage === Math.ceil(totalItems / itemsPerPage)}
+          >
+            Próximo
+          </button>
+        </div>
+
       </div>
     </div>
   );

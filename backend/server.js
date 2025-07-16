@@ -134,9 +134,10 @@ app.delete('/api/analistas/:id', async (req, res) => {
 
 // Relatórios
 app.get('/api/relatorios/atendimentos', async (req, res) => {
-    const { franqueado, consultor, dataInicio, dataFim } = req.query;
-    let query = `
-        SELECT a.id, an.nome as nome_atendente, c.nome as nome_consultor, a.chegada_em, a.inicio_em, a.finalizado_em, a.case_number
+    const { franqueado, consultor, dataInicio, dataFim, page = 1, limit = 10 } = req.query;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    let baseQuery = `
         FROM atendimentos a
         LEFT JOIN consultores c ON a.consultor_id = c.id
         JOIN analistas_atendimento an ON a.analista_id = an.id
@@ -145,26 +146,41 @@ app.get('/api/relatorios/atendimentos', async (req, res) => {
     const params = [];
 
     if (franqueado) {
-        query += ` AND an.nome LIKE ?`;
+        baseQuery += ` AND an.nome LIKE ?`;
         params.push(`%${franqueado}%`);
     }
     if (consultor) {
-        query += ` AND c.nome LIKE ?`;
+        baseQuery += ` AND c.nome LIKE ?`;
         params.push(`%${consultor}%`);
     }
     if (dataInicio) {
-        query += ` AND a.finalizado_em >= ?`;
+        baseQuery += ` AND a.finalizado_em >= ?`;
         params.push(`${dataInicio} 00:00:00`);
     }
     if (dataFim) {
-        query += ` AND a.finalizado_em <= ?`;
+        baseQuery += ` AND a.finalizado_em <= ?`;
         params.push(`${dataFim} 23:59:59`);
     }
 
-    query += ` ORDER BY a.finalizado_em DESC`;
+    const dataQuery = `
+        SELECT a.id, an.nome as nome_atendente, c.nome as nome_consultor, a.chegada_em, a.inicio_em, a.finalizado_em, a.case_number
+        ${baseQuery}
+        ORDER BY a.finalizado_em DESC
+        LIMIT ? OFFSET ?
+    `;
 
-    const [rows] = await pool.query(query, params);
-    res.json(rows);
+    const countQuery = `SELECT COUNT(*) as total ${baseQuery}`;
+
+    try {
+        const [dataRows] = await pool.query(dataQuery, [...params, parseInt(limit), offset]);
+        const [countRows] = await pool.query(countQuery, params);
+        const total = countRows[0].total;
+
+        res.json({ data: dataRows, total });
+    } catch (error) {
+        console.error("Erro ao buscar relatórios paginados:", error);
+        res.status(500).json({ message: "Erro interno do servidor ao buscar relatórios." });
+    }
 });
 
 // Rota para remover um analista da fila de espera
