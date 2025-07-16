@@ -66,11 +66,7 @@ h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, i
     color: #FFFFFF !important; /* Garante branco para cabeçalhos e células da tabela */
 }
 
-.relatorios th:nth-child(1), .relatorios td:nth-child(1) { width: 20%; }
-.relatorios th:nth-child(2), .relatorios td:nth-child(2) { width: 20%; }
-.relatorios th:nth-child(3), .relatorios td:nth-child(3) { width: 24%; }
-.relatorios th:nth-child(4), .relatorios td:nth-child(4) { width: 24%; }
-.relatorios th:nth-child(5), .relatorios td:nth-child(5) { width: 25%; }
+
 
 /* Formulários */
 .form-control, .form-select {
@@ -128,6 +124,25 @@ h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, i
 .relatorios td:first-child,
 .relatorios th:first-child {
   padding-left: 20px; /* Aumenta o espaço interno à esquerda */
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px; /* 0px vertical, 10px horizontal */
+  text-align: left;
+  margin-top: 20px;
+  table-layout: auto;
+}
+
+.report-table th, .report-table td {
+  padding: 8px;
+  color: #FFFFFF !important; /* Garante branco para cabeçalhos e células da tabela */
+  border: 1px solid #333; /* Adiciona borda para visualização do espaçamento */
+}
+
+.report-table th {
+  background-color: #2a2a2a !important;
 }
 
 /* Sobrescrita de estilos para o Modal */

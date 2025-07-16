@@ -138,7 +138,7 @@ function Relatorios() {
       {/* ÁREA DO RELATÓRIO PARA EXPORTAÇÃO */}
       <div ref={reportTableRef}>
         <h2>Relatório de Atendimentos Finalizados</h2>
-        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 10px', textAlign: 'left', marginTop: '20px' }}>
+        <table className="report-table">
           <thead>
             <tr>
               <th>Atendente</th>
