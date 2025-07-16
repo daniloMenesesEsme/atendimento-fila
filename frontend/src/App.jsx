@@ -6,7 +6,7 @@ import './App.css';
 import Navbar from './components/Navbar';
 import EntradaFila from './components/EntradaFila';
 import PainelAnalista from './components/PainelAnalista';
-import PainelConsultor from './components/PainelConsultor';
+import Dashboard from './components/Dashboard';
 import Relatorios from './components/Relatorios';
 import CadastroConsultores from './components/CadastroConsultores';
 import CadastroAnalistas from './components/CadastroAnalistas';
@@ -58,7 +58,7 @@ function App() {
             <Route path="/" element={
               <>
                 <EntradaFila socket={socket} />
-                <PainelConsultor socket={socket} estado={estado} />
+                <Dashboard socket={socket} estado={estado} />
               </>
             } />
             
