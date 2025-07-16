@@ -1,34 +1,28 @@
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './Dashboard.css';
 
 
 const PainelAnalista = ({ socket, estado }) => {
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationData, setNotificationData] = useState({});
 
   useEffect(() => {
-    // Pede permissão para notificações assim que o componente é montado
-    if (Notification.permission !== 'granted') {
-      Notification.requestPermission();
-    }
-
     const handleAtendimentoIniciado = (data) => {
-      const { consultor } = data;
-      if (Notification.permission === 'granted') {
-        const notification = new Notification('Você está sendo atendido!', {
-          body: `O consultor ${consultor.nome} iniciou seu atendimento. Clique para entrar na reunião: ${consultor.meet_link}`,
-          icon: '/vite.svg' // Opcional: adicione um ícone
-        });
+      setNotificationData(data.consultor);
+      setShowNotification(true);
 
-        notification.onclick = () => {
-          window.open(consultor.meet_link, '_blank');
-        };
-      }
+      // Notificação desaparece após 10 segundos
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 10000);
+
+      return () => clearTimeout(timer);
     };
 
     socket.on('atendimento-iniciado', handleAtendimentoIniciado);
 
-    // Limpa o listener quando o componente é desmontado
     return () => {
       socket.off('atendimento-iniciado', handleAtendimentoIniciado);
     };
@@ -36,6 +30,19 @@ const PainelAnalista = ({ socket, estado }) => {
 
   return (
     <div className="dashboard-container">
+      {showNotification && (
+        <div className="alert alert-success text-center" role="alert">
+          <h4>Você está sendo atendido por {notificationData.nome}!</h4>
+          <p>Clique no link para entrar na reunião:</p>
+          <a href={notificationData.meet_link} target="_blank" rel="noopener noreferrer" className="btn btn-primary me-2">
+            Entrar no Meet
+          </a>
+          <button onClick={() => setShowNotification(false)} className="btn btn-secondary">
+            Fechar
+          </button>
+        </div>
+      )}
+
       {/* Fila de Espera */}
       <div className="fila-section">
         <h2>Fila de Espera</h2>
