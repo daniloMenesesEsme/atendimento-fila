@@ -141,7 +141,6 @@ function Relatorios() {
           <thead>
             <tr>
               <th style={{ width: '15%' }}>Atendente</th>
-              <th style={{ width: '15%' }}>Consultor</th>
               <th style={{ width: '15%' }}>Nº do Caso</th>
               <th style={{ width: '18%' }}>Chegada na Fila</th>
               <th style={{ width: '18%' }}>Início do Atendimento</th>
