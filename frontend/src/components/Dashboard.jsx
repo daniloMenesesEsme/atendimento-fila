@@ -1,4 +1,5 @@
 import React from 'react';
+import './Dashboard.css';
 
 function Dashboard({ socket, estado }) {
   const { fila, consultores, emAtendimento } = estado;
