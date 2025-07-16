@@ -71,7 +71,7 @@ io.on('connection', (socket) => {
 
         // Notifica o analista específico
         if (socketIdAnalista) {
-          const [consultor] = await pool.query("SELECT nome FROM consultores WHERE id = ?", [consultor_id]);
+          const [consultor] = await pool.query("SELECT nome, meet_link FROM consultores WHERE id = ?", [consultor_id]);
           if (consultor.length > 0) {
             io.to(socketIdAnalista).emit('atendimento-iniciado', { consultor: consultor[0] });
           }

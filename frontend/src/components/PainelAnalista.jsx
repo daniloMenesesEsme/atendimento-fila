@@ -15,10 +15,14 @@ const PainelAnalista = ({ socket, estado }) => {
     const handleAtendimentoIniciado = (data) => {
       const { consultor } = data;
       if (Notification.permission === 'granted') {
-        new Notification('Você está sendo atendido!', {
-          body: `O consultor ${consultor.nome} iniciou seu atendimento.`,
+        const notification = new Notification('Você está sendo atendido!', {
+          body: `O consultor ${consultor.nome} iniciou seu atendimento. Clique para entrar na reunião: ${consultor.meet_link}`,
           icon: '/vite.svg' // Opcional: adicione um ícone
         });
+
+        notification.onclick = () => {
+          window.open(consultor.meet_link, '_blank');
+        };
       }
     };
 
