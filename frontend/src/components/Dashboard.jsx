@@ -22,7 +22,7 @@ function Dashboard({ socket, estado }) {
   const handleRemoverDaFila = async (id) => {
     if (confirm('Tem certeza que deseja remover este analista da fila?')) {
       try {
-        const response = await fetch(`http://localhost:3000/api/atendimentos/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/atendimentos/${id}`, {
           method: 'DELETE',
         });
         if (!response.ok) {

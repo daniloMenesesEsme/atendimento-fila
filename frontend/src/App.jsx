@@ -12,7 +12,16 @@ import CadastroConsultores from './components/CadastroConsultores';
 import CadastroAnalistas from './components/CadastroAnalistas';
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-const socket = io(apiUrl);
+const socket = io(apiUrl, {
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+  transports: ['websocket'],
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"]
+  }
+});
 
 function App() {
   const [estado, setEstado] = useState({ 
@@ -23,19 +32,44 @@ function App() {
   const [dbStatus, setDbStatus] = useState(false);
   const location = useLocation();
 
+  // Função para verificar o status da conexão
+  const checkConnection = async () => {
+    try {
+      const res = await fetch(`${apiUrl}/api/health`);
+      setDbStatus(res.ok);
+    } catch (error) {
+      console.error('Erro ao verificar conexão:', error);
+      setDbStatus(false);
+    }
+  };
+
   useEffect(() => {
-    fetch(`${apiUrl}/api/health`)
-      .then(res => res.ok)
-      .then(status => setDbStatus(status))
-      .catch(() => setDbStatus(false));
+    // Verificar conexão inicialmente e a cada 30 segundos
+    checkConnection();
+    const interval = setInterval(checkConnection, 30000);
+
+    // Configurar eventos do socket
+    socket.on('connect', () => {
+      console.log('Socket conectado');
+      checkConnection();
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Socket desconectado');
+      setDbStatus(false);
+    });
 
     socket.on('estadoAtualizado', (novoEstado) => {
+      console.log('Estado atualizado:', novoEstado);
       setEstado(novoEstado);
     });
 
     import('bootstrap/dist/js/bootstrap.bundle.min.js');
 
     return () => {
+      clearInterval(interval);
+      socket.off('connect');
+      socket.off('disconnect');
       socket.off('estadoAtualizado');
     };
   }, []);
