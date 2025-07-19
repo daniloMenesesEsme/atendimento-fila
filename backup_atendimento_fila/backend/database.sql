@@ -1,0 +1,30 @@
+CREATE TABLE IF NOT EXISTS analistas_atendimento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS consultores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    meet_link VARCHAR(255),
+    disponivel BOOLEAN DEFAULT TRUE,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS atendimentos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    analista_id INT NOT NULL,
+    consultor_id INT,
+    chegada_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    inicio_em TIMESTAMP,
+    finalizado_em TIMESTAMP,
+    status ENUM('AGUARDANDO', 'EM_ATENDIMENTO', 'FINALIZADO', 'CANCELADO')
+DEFAULT 'AGUARDANDO',
+    prioridade INT DEFAULT 0,
+    case_number VARCHAR(255) NULL,
+    FOREIGN KEY (analista_id) REFERENCES analistas_atendimento(id),
+    FOREIGN KEY (consultor_id) REFERENCES consultores(id)
+);
