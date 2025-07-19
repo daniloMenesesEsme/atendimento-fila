@@ -11,11 +11,12 @@ RUN npm install
 # Copiar o resto dos arquivos
 COPY backend/ ./
 
-# Criar diretório routes se não existir
-RUN mkdir -p routes
+# Definir variáveis de ambiente padrão
+ENV PORT=3000
+ENV NODE_ENV=production
 
 # Expor a porta que o servidor usa
 EXPOSE 3000
 
 # Comando para iniciar o servidor
-CMD ["npm", "start"] 
+CMD ["node", "server.js"] 
