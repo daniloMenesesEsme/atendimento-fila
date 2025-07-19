@@ -28,3 +28,12 @@ DEFAULT 'AGUARDANDO',
     FOREIGN KEY (analista_id) REFERENCES analistas_atendimento(id),
     FOREIGN KEY (consultor_id) REFERENCES consultores(id)
 );
+
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    nome VARCHAR(255) NOT NULL,
+    perfil ENUM('ADMIN', 'CONSULTOR', 'ANALISTA') NOT NULL DEFAULT 'ANALISTA',
+    ativo BOOLEAN DEFAULT TRUE,
+    ultimo_login TIMESTAMP
+);

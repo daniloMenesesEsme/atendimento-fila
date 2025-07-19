@@ -1,0 +1,290 @@
+.demo-app-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+}
+
+.scene-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    text-align: center;
+    max-width: 900px;
+    width: 100%;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* General Button Styles */
+.btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    margin: 10px;
+    text-decoration: none; /* For buttons used as links */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background-color: #3498db;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+}
+
+.btn-success {
+    background-color: #2ecc71;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+}
+
+.icon {
+    margin-right: 8px;
+}
+
+/* Scene Specific Styles */
+.system-logo {
+    width: 180px;
+    height: 180px;
+    margin-bottom: 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    font-size: 2.8rem;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+p {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    margin-bottom: 40px;
+}
+
+h2 {
+    font-size: 2.2rem;
+    color: #34495e;
+    margin-bottom: 25px;
+}
+
+/* Analyst Request Scene */
+.analyst-request-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.status-message {
+    margin-top: 25px;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.status-message.active {
+    opacity: 1;
+}
+
+/* Dashboard/Overview Scene */
+.dashboard-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.dashboard-section {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    text-align: left;
+}
+
+.dashboard-section h3 {
+    color: #34495e;
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+/* Meet Scene */
+.meet-scene {
+    background-color: #202124; /* Dark background for Meet */
+    color: #fff;
+}
+
+.meet-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.meet-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #3c4043;
+    margin-bottom: 20px;
+}
+
+.meet-time {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.meet-title {
+    font-size: 1.2rem;
+    color: #bdc3c7;
+}
+
+.video-grid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.video-participant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.video-participant .avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 3px solid #3498db;
+}
+
+.video-participant p {
+    margin-top: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.meet-controls {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.meet-btn {
+    background-color: #3c4043;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.meet-btn:hover {
+    background-color: #5f6368;
+}
+
+.meet-btn-end {
+    background-color: #ea4335;
+    border-radius: 25px; /* Pill shape */
+    width: auto;
+    padding: 0 20px;
+}
+
+.meet-btn-end:hover {
+    background-color: #c5221f;
+}
+
+/* Results Scene */
+.metric-card {
+    background-color: #e8f5e9;
+    border: 1px solid #a5d6a7;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.metric-card h3 {
+    margin-top: 0;
+    color: #1b5e20;
+}
+
+.metric-card p {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2ecc77;
+}
+
+.chart-placeholder {
+    background-color: #f0f0f0;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #7f8c8d;
+    border-radius: 5px;
+    font-style: italic;
+    margin-top: 15px;
+}
+
+/* End Scene */
+.tagline {
+    font-style: italic;
+    color: #3498db;
+    font-size: 1.5rem;
+    margin-bottom: 40px;
+}

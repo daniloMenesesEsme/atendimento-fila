@@ -4,10 +4,24 @@ const http = require('http');
 const { Server } = require("socket.io");
 const cors = require('cors');
 const mysql = require('mysql2/promise');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'supersecretkey', // Use uma chave secreta forte e armazene em .env
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Mudar para true em produção com HTTPS
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -22,6 +36,47 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
+});
+
+// Passport Google OAuth Strategy
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL
+  },
+  async (accessToken, refreshToken, profile, cb) => {
+    try {
+      const [users] = await pool.query('SELECT * FROM usuarios WHERE email = ?', [profile.emails[0].value]);
+      let user = users[0];
+
+      if (!user) {
+        // Se o usuário não existe, cria um novo
+        const [result] = await pool.query('INSERT INTO usuarios (email, nome, ultimo_login) VALUES (?, ?, NOW())', [profile.emails[0].value, profile.displayName]);
+        user = { id: result.insertId, email: profile.emails[0].value, nome: profile.displayName, perfil: 'ANALISTA' }; // Perfil padrão
+      } else {
+        // Se o usuário existe, atualiza o último login
+        await pool.query('UPDATE usuarios SET ultimo_login = NOW() WHERE id = ?', [user.id]);
+      }
+      // Retorna o usuário para o Passport
+      return cb(null, user);
+    } catch (err) {
+      return cb(err, null);
+    }
+  }
+));
+
+// Passport Serialization/Deserialization
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const [users] = await pool.query('SELECT * FROM usuarios WHERE id = ?', [id]);
+    done(null, users[0]);
+  } catch (err) {
+    done(err, null);
+  }
 });
 
 // --- Lógica de Negócio e Sockets ---
@@ -48,6 +103,30 @@ const emitirEstadoAtual = async () => {
 };
 
 const analistasSockets = {};
+
+// JWT Strategy for Passport
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+
+const opts = {};
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = process.env.JWT_SECRET;
+
+passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
+  try {
+    const [users] = await pool.query('SELECT * FROM usuarios WHERE id = ?', [jwt_payload.id]);
+    if (users.length > 0) {
+      return done(null, users[0]);
+    } else {
+      return done(null, false);
+    }
+  } catch (err) {
+    return done(err, false);
+  }
+}));
+
+// Middleware to protect routes
+const verifyToken = passport.authenticate('jwt', { session: false });
 
 io.on('connection', (socket) => {
   emitirEstadoAtual();
@@ -106,6 +185,21 @@ io.on('connection', (socket) => {
 
 // --- Rotas da API ---
 
+// Google OAuth routes
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/', session: false }), // session: false because we use JWT
+  (req, res) => {
+    // Successful authentication, generate JWT
+    const user = req.user;
+    const token = jwt.sign({ id: user.id, email: user.email, perfil: user.perfil }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    
+    // Redirect to frontend with token (you might want to use a more secure way, like httpOnly cookie)
+    res.redirect(`${process.env.FRONTEND_URL}/auth-success?token=${token}`);
+  }
+);
+
 // Health Check
 app.get('/api/health', async (req, res) => {
     try {
@@ -117,51 +211,51 @@ app.get('/api/health', async (req, res) => {
 });
 
 // CRUD Consultores
-app.get('/api/consultores', async (req, res) => {
+app.get('/api/consultores', verifyToken, async (req, res) => {
     const [rows] = await pool.query('SELECT * FROM consultores ORDER BY nome ASC');
     res.json(rows);
 });
-app.post('/api/consultores', async (req, res) => {
+app.post('/api/consultores', verifyToken, async (req, res) => {
     const { nome, meet_link, email } = req.body;
     await pool.query('INSERT INTO consultores (nome, meet_link, email) VALUES (?, ?, ?)', [nome, meet_link, email]);
     emitirEstadoAtual();
     res.status(201).send();
 });
-app.put('/api/consultores/:id', async (req, res) => {
+app.put('/api/consultores/:id', verifyToken, async (req, res) => {
     const { nome, meet_link, email } = req.body;
     await pool.query('UPDATE consultores SET nome = ?, meet_link = ?, email = ? WHERE id = ?', [nome, meet_link, email, req.params.id]);
     emitirEstadoAtual();
     res.status(200).send();
 });
-app.delete('/api/consultores/:id', async (req, res) => {
+app.delete('/api/consultores/:id', verifyToken, async (req, res) => {
     await pool.query('DELETE FROM consultores WHERE id = ?', [req.params.id]);
     emitirEstadoAtual();
     res.status(204).send();
 });
 
 // CRUD Analistas
-app.get('/api/analistas', async (req, res) => {
+app.get('/api/analistas', verifyToken, async (req, res) => {
     const [rows] = await pool.query('SELECT * FROM analistas_atendimento ORDER BY nome ASC');
     res.json(rows);
 });
-app.post('/api/analistas', async (req, res) => {
+app.post('/api/analistas', verifyToken, async (req, res) => {
     const { nome, email } = req.body;
     await pool.query('INSERT INTO analistas_atendimento (nome, email) VALUES (?, ?)', [nome, email]);
     res.status(201).send();
 });
-app.put('/api/analistas/:id', async (req, res) => {
+app.put('/api/analistas/:id', verifyToken, async (req, res) => {
     const { nome, email } = req.body;
     await pool.query('UPDATE analistas_atendimento SET nome = ?, email = ? WHERE id = ?', [nome, email, req.params.id]);
     res.status(200).send();
 });
-app.delete('/api/analistas/:id', async (req, res) => {
+app.delete('/api/analistas/:id', verifyToken, async (req, res) => {
     await pool.query('DELETE FROM atendimentos WHERE analista_id = ?', [req.params.id]); // Exclui atendimentos vinculados
     await pool.query('DELETE FROM analistas_atendimento WHERE id = ?', [req.params.id]);
     res.status(204).send();
 });
 
 // Relatórios
-app.get('/api/relatorios/atendimentos', async (req, res) => {
+app.get('/api/relatorios/atendimentos', verifyToken, async (req, res) => {
     const { franqueado, consultor, dataInicio, dataFim, page = 1, limit = 10 } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
@@ -212,7 +306,7 @@ app.get('/api/relatorios/atendimentos', async (req, res) => {
 });
 
 // Rota para remover um analista da fila de espera
-app.delete('/api/atendimentos/:id', async (req, res) => {
+app.delete('/api/atendimentos/:id', verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
         // Garante que só podemos remover alguém que está AGUARDANDO
@@ -232,7 +326,7 @@ app.delete('/api/atendimentos/:id', async (req, res) => {
 });
 
 // Rota para atualizar a prioridade de um atendimento
-app.put('/api/atendimentos/:id/prioridade', async (req, res) => {
+app.put('/api/atendimentos/:id/prioridade', verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
         const { prioridade } = req.body;

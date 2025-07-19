@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demonstração - Sistema de Atendimento de Fila</title>
+    <link rel="stylesheet" href="demo.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="demo-container">
+
+        <!-- Cena 1: Tela de Abertura -->
+        <section id="scene-intro" class="demo-scene active">
+            <div class="intro-content">
+                <img src="https://via.placeholder.com/150x150?text=LOGO+BOTICARIO" alt="Logo do Sistema" class="system-logo">
+                <h1>Sistema de Atendimento Inteligente</h1>
+                <p>O Futuro do Atendimento Organizado</p>
+                <button id="btn-start-demo" class="btn btn-primary">Iniciar Demonstração</button>
+            </div>
+        </section>
+
+        <!-- Cena 2: O Analista Pede Ajuda -->
+        <section id="scene-analyst-request" class="demo-scene">
+            <div class="analyst-request-content">
+                <h2><span class="icon">👤</span> Visão do Analista</h2>
+                <p>Quando um analista precisa de suporte, ele simplesmente solicita um atendimento.</p>
+                <button id="btn-analyst-request" class="btn btn-primary">Preciso de Suporte</button>
+                <div id="analyst-status" class="status-message">
+                    <!-- Mensagem de status do analista -->
+                </div>
+                <button id="btn-analyst-advance" class="btn btn-secondary btn-advance">Avançar →</button>
+            </div>
+        </section>
+
+        <!-- Cena 3: O Painel de Controle (Visão Geral) -->
+        <section id="scene-overview" class="demo-scene">
+            <div class="overview-content">
+                <h2><span class="icon">📊</span> Painel de Controle</h2>
+                <p>Visão geral da fila e dos consultores disponíveis.</p>
+                <div class="panel-grid">
+                    <div class="panel-item">
+                        <h3>Fila de Espera</h3>
+                        <ul id="overview-queue-list">
+                            <!-- Senhas aqui -->
+                        </ul>
+                    </div>
+                    <div class="panel-item">
+                        <h3>Consultores</h3>
+                        <ul id="overview-consultant-list">
+                            <li>Consultor 01 <span class="status-dot status-ok"></span></li>
+                            <li>Consultor 02 <span class="status-dot status-ok"></span></li>
+                        </ul>
+                    </div>
+                </div>
+                <button id="btn-call-next" class="btn btn-success">Chamar Próximo</button>
+            </div>
+        </section>
+
+        <!-- Cena 4: A Chamada e a Conexão (Simulação Meet) -->
+        <section id="scene-meet" class="demo-scene">
+            <div class="meet-content">
+                <div class="meet-header">
+                    <span class="meet-time">00:00</span>
+                    <span class="meet-title">Atendimento em Andamento</span>
+                </div>
+                <div class="video-grid">
+                    <div class="video-participant">
+                        <img src="https://via.placeholder.com/100x100?text=CONSULTOR" alt="Consultor" class="avatar">
+                        <p>Consultor</p>
+                    </div>
+                    <div class="video-participant">
+                        <img src="https://via.placeholder.com/100x100?text=ANALISTA" alt="Analista" class="avatar">
+                        <p id="analyst-in-meet">Analista (Número do Caso: 12345678)</p>
+                    </div>
+                </div>
+                <div class="meet-controls">
+                    <button class="meet-btn"><span class="icon">🎤</span></button>
+                    <button class="meet-btn"><span class="icon">📹</span></button>
+                    <button id="btn-end-call" class="btn btn-danger meet-btn-end"><span class="icon">📞</span> Finalizar Atendimento</button>
+                    <button class="meet-btn"><span class="icon">💬</span></button>
+                    <button class="meet-btn"><span class="icon">...</span></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cena 5: O Resultado (Dashboard/Relatório) -->
+        <section id="scene-results" class="demo-scene">
+            <div class="results-content">
+                <h2><span class="icon">✅</span> Atendimento Finalizado!</h2>
+                <div class="metric-card">
+                    <h3>Tempo de Atendimento</h3>
+                    <p id="service-time">00:00</p>
+                </div>
+                <div class="dashboard-section">
+                    <h3><span class="icon">📈</span> Visão Geral do Dia</h3>
+                    <div class="chart-placeholder">Gráfico de Atendimentos por Hora (Dados Simulados)</div>
+                </div>
+                <h3><span class="icon">📋</span> Histórico Recente</h3>
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Número do Caso</th>
+                            <th>Consultor</th>
+                            <th>Duração</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-table-body">
+                        <!-- Atendimentos finalizados aqui -->
+                    </tbody>
+                </table>
+                <button id="btn-view-report" class="btn btn-primary btn-advance">Finalizar Apresentação</button>
+            </div>
+        </section>
+
+        <!-- Cena 6: Tela de Encerramento -->
+        <section id="scene-end" class="demo-scene">
+            <div class="end-content">
+                <h1>Obrigado!</h1>
+                <p>Você viu como nosso sistema simplifica, organiza e gera dados para cada atendimento.</p>
+                <p class="tagline">Organização. Eficiência. Dados. Transforme seu atendimento.</p>
+                <button id="btn-restart-demo" class="btn btn-primary">Reiniciar Demonstração</button>
+            </div>
+        </section>
+
+    </div>
+
+    <audio id="notification-sound" src="https://www.myinstants.com/media/sounds/ding-sound-effect.mp3" preload="auto"></audio>
+    <script src="demo.js"></script>
+</body>
+</html>
