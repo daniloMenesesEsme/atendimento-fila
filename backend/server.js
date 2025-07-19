@@ -8,10 +8,14 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
 const jwt = require('jsonwebtoken');
+const healthRoutes = require('./routes/health');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Health Check route (deve vir antes da autenticação)
+app.use('/api', healthRoutes);
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'supersecretkey', // Use uma chave secreta forte e armazene em .env
@@ -351,4 +355,6 @@ app.put('/api/atendimentos/:id/prioridade', verifyToken, async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
