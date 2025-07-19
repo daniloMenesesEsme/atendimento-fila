@@ -16,7 +16,7 @@ const socket = io(apiUrl, {
   reconnection: true,
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
-  transports: ['websocket'],
+  transports: ['websocket', 'polling'],
   cors: {
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"]
@@ -32,11 +32,26 @@ function App() {
   const [dbStatus, setDbStatus] = useState(false);
   const location = useLocation();
 
-  // Função para verificar o status da conexão
+  // Função para verificar o status da conexão e carregar dados iniciais
   const checkConnection = async () => {
     try {
       const res = await fetch(`${apiUrl}/api/health`);
-      setDbStatus(res.ok);
+      if (res.ok) {
+        setDbStatus(true);
+        // Carregar dados iniciais
+        const [consultoresRes, filaRes, emAtendimentoRes] = await Promise.all([
+          fetch(`${apiUrl}/api/consultores`).then(r => r.json()),
+          fetch(`${apiUrl}/api/atendimentos?status=AGUARDANDO`).then(r => r.json()),
+          fetch(`${apiUrl}/api/atendimentos?status=EM_ATENDIMENTO`).then(r => r.json())
+        ]);
+        setEstado({
+          consultores: consultoresRes,
+          fila: filaRes,
+          emAtendimento: emAtendimentoRes
+        });
+      } else {
+        setDbStatus(false);
+      }
     } catch (error) {
       console.error('Erro ao verificar conexão:', error);
       setDbStatus(false);
