@@ -60,6 +60,27 @@ function Dashboard({ socket, estado }) {
     }
   };
 
+  const handleTogglePause = async (consultorId, currentStatus) => {
+    const newStatus = currentStatus === 'disponivel' ? 'em_pausa' : 'disponivel';
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/consultores/${consultorId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Falha ao atualizar status do consultor');
+      }
+      // O estado será atualizado via Socket.IO
+    } catch (error) {
+      console.error("Erro ao atualizar status do consultor:", error);
+      alert(error.message);
+    }
+  };
+
   return (
     <div className="row mt-4">
       
@@ -96,20 +117,46 @@ function Dashboard({ socket, estado }) {
                     const meuAtendimento = emAtendimento.find(a => a.consultor_id === c.id);
                     const meetLink = c.meet_link;
 
+                    let cardClass = 'border-secondary'; // Default para offline ou desconhecido
+                    let statusText = 'Offline';
+                    let statusTextColor = 'text-secondary';
+
+                    if (c.status === 'disponivel') {
+                        cardClass = 'border-success';
+                        statusText = 'Disponível';
+                        statusTextColor = 'text-success';
+                    } else if (c.status === 'em_pausa') {
+                        cardClass = 'border-warning';
+                        statusText = 'Em Pausa';
+                        statusTextColor = 'text-warning';
+                    } else if (c.status === 'em_atendimento') {
+                        cardClass = 'border-danger';
+                        statusText = 'Em Atendimento';
+                        statusTextColor = 'text-danger';
+                    }
+
                     return (
                         <div key={c.id} className="col-md-6 mb-3">
-                            <div className={`card ${c.disponivel ? 'border-success' : 'border-danger'}`}>
+                            <div className={`card ${cardClass}`}>
                                 <div className="card-body">
                                     <h5 className="card-title">{c.nome}</h5>
-                                    <p className={`card-text text-${Boolean(c.disponivel) ? 'success' : 'danger'}`}>
-                                        {Boolean(c.disponivel) ? 'Disponível' : 'Ocupado'}
+                                    <p className={`card-text ${statusTextColor}`}>
+                                        {statusText}
                                     </p>
-                                    {Boolean(c.disponivel) ? (
-                                        <button onClick={() => handleAtender(c.id)} disabled={fila.length === 0} className="btn btn-primary">
-                                            Atender Próximo
+                                    {c.status === 'disponivel' ? (
+                                        <>
+                                            <button onClick={() => handleAtender(c.id)} disabled={fila.length === 0} className="btn btn-primary me-2">
+                                                Atender Próximo
+                                            </button>
+                                            <button onClick={() => handleTogglePause(c.id, c.status)} className="btn btn-warning">
+                                                Pausar
+                                            </button>
+                                        </>
+                                    ) : c.status === 'em_pausa' ? (
+                                        <button onClick={() => handleTogglePause(c.id, c.status)} className="btn btn-success">
+                                            Retomar Atendimento
                                         </button>
-                                    ) : (
-                                        meuAtendimento ? (
+                                    ) : meuAtendimento ? (
                                         <div className="atendimento-info">
                                             <p>Atendendo: <strong>{meuAtendimento.nome_analista}</strong></p>
                                             <a href={meetLink} target="_blank" rel="noopener noreferrer" className="btn btn-info btn-sm">Entrar no Meet</a>
@@ -117,8 +164,7 @@ function Dashboard({ socket, estado }) {
                                                 Finalizar
                                             </button>
                                         </div>
-                                        ) : null
-                                    )
+                                    ) : null
                                     }
                                 </div>
                             </div>
