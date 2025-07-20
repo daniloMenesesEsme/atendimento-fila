@@ -49,6 +49,10 @@ const emitirEstadoAtual = async (socket = null) => {
       WHERE a.status = 'EM_ATENDIMENTO'
     `);
     
+    console.log("Dados da Fila:", fila);
+    console.log("Dados dos Consultores:", consultores);
+    console.log("Dados Em Atendimento:", emAtendimento);
+
     const estado = { fila, consultores, emAtendimento };
 
     if (socket) {
