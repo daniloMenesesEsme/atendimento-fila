@@ -95,18 +95,34 @@ function Relatorios() {
       // Garante que todos os elementos da tabela também tenham texto preto e fundo branco
       const table = element.querySelector('table');
       if (table) {
+        table.style.width = '100%';
+        table.style.borderCollapse = 'collapse'; // Mais compatível com html2canvas
+        table.style.marginTop = '20px';
+        table.style.textAlign = 'left';
         table.style.backgroundColor = '#ffffff';
+
         const ths = table.querySelectorAll('th');
         ths.forEach(th => {
+          th.style.border = '1px solid #ddd';
+          th.style.padding = '8px';
+          th.style.backgroundColor = '#f2f2f2';
           th.style.color = '#000000';
-          th.style.backgroundColor = '#f2f2f2'; // Mantém o fundo do cabeçalho da tabela cinza claro
         });
+
         const tds = table.querySelectorAll('td');
         tds.forEach(td => {
+          td.style.border = '1px solid #ddd';
+          td.style.padding = '8px';
           td.style.color = '#000000';
-          td.style.backgroundColor = '#ffffff'; // Garante que o fundo da célula seja branco
+          td.style.backgroundColor = '#ffffff';
         });
       }
+
+      // Força a cor do texto para preto em todos os elementos dentro do elemento capturado
+      const allElements = element.querySelectorAll('*');
+      allElements.forEach(el => {
+        el.style.color = '#000000';
+      });
 
       const opt = {
         margin:       10,
@@ -124,13 +140,20 @@ function Relatorios() {
         element.style.color = ''; // Reverte cor do texto
         if (table) {
           table.style.backgroundColor = '';
+          table.style.borderCollapse = '';
+          table.style.marginTop = '';
+          table.style.textAlign = '';
           const ths = table.querySelectorAll('th');
           ths.forEach(th => {
-            th.style.color = '';
+            th.style.border = '';
+            th.style.padding = '';
             th.style.backgroundColor = '';
+            th.style.color = '';
           });
           const tds = table.querySelectorAll('td');
           tds.forEach(td => {
+            td.style.border = '';
+            td.style.padding = '';
             td.style.color = '';
             td.style.backgroundColor = '';
           });
