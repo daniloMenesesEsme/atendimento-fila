@@ -293,6 +293,126 @@ app.get('/api/relatorios/atendimentos', async (req, res) => {
     }
 });
 
+// Nova rota para exportar relatório como PDF
+app.get('/api/relatorios/atendimentos/export-pdf', async (req, res) => {
+    const { franqueado, consultor, dataInicio, dataFim, caseNumber } = req.query;
+
+    let baseQuery = `
+        FROM atendimentos a
+        LEFT JOIN consultores c ON a.consultor_id = c.id
+        JOIN analistas_atendimento an ON a.analista_id = an.id
+        WHERE a.status = 'FINALIZADO'
+    `;
+    const params = [];
+
+    if (franqueado) {
+        baseQuery += ` AND an.nome LIKE ?`;
+        params.push(`%${franqueado}%`);
+    }
+    if (consultor) {
+        baseQuery += ` AND c.nome LIKE ?`;
+        params.push(`%${consultor}%`);
+    }
+    if (dataInicio) {
+        baseQuery += ` AND DATE(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) >= ?`;
+        params.push(`${dataInicio}`);
+    }
+    if (dataFim) {
+        baseQuery += ` AND DATE(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) <= ?`;
+        params.push(`${dataFim}`);
+    }
+    if (caseNumber) {
+        baseQuery += ` AND a.case_number LIKE ?`;
+        params.push(`%${caseNumber}%`);
+    }
+
+    const dataQuery = `
+        SELECT a.id, an.nome as nome_atendente, c.nome as nome_consultor, a.chegada_em, a.inicio_em, a.finalizado_em, a.case_number
+        ${baseQuery}
+        ORDER BY a.finalizado_em DESC
+    `;
+
+    try {
+        const [dataRows] = await pool.query(dataQuery, params);
+
+        // Construir o HTML do relatório
+        const formatarData = (data) => {
+            if (!data) return '-';
+            return new Date(data).toLocaleString('pt-BR');
+        };
+
+        let tableRowsHtml = '';
+        if (dataRows.length > 0) {
+            tableRowsHtml = dataRows.map(a => `
+                <tr>
+                    <td>${a.nome_atendente}</td>
+                    <td>${a.nome_consultor || '-'}</td>
+                    <td>${a.case_number || '-'}</td>
+                    <td>${formatarData(a.chegada_em)}</td>
+                    <td>${formatarData(a.inicio_em)}</td>
+                    <td>${formatarData(a.finalizado_em)}</td>
+                </tr>
+            `).join('');
+        } else {
+            tableRowsHtml = `<tr><td colspan="6" style="text-align: center;">Nenhum atendimento encontrado para os filtros aplicados.</td></tr>`;
+        }
+
+        const reportTitle = "Relatório de Atendimentos Finalizados";
+        const currentDate = new Date().toLocaleDateString('pt-BR');
+
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>${reportTitle}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+                    h1 { text-align: center; color: #333; font-size: 24px; margin-bottom: 5px; }
+                    p { text-align: center; font-size: 14px; color: #666; margin-top: 0; margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; color: #000; }
+                    th { background-color: #f2f2f2; }
+                    .no-data { text-align: center; padding: 20px; color: #999; }
+                </style>
+            </head>
+            <body>
+                <h1>${reportTitle}</h1>
+                <p>Gerado em: ${currentDate}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Atendente</th>
+                            <th>Consultor</th>
+                            <th>Nº do Caso</th>
+                            <th>Chegada na Fila</th>
+                            <th>Início do Atendimento</th>
+                            <th>Fim do Atendimento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRowsHtml}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+        `;
+
+        const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const page = await browser.newPage();
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+        const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+        await browser.close();
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=relatorio_atendimentos.pdf');
+        res.send(pdfBuffer);
+
+    } catch (error) {
+        console.error("Erro ao gerar PDF do relatório:", error);
+        res.status(500).json({ message: "Erro interno do servidor ao gerar PDF." });
+    }
+});
+
 // Rota para remover um analista da fila de espera
 app.delete('/api/atendimentos/:id', async (req, res) => {
     try {
