@@ -107,10 +107,8 @@ function Relatorios() {
       }
 
       // Adiciona o elemento temporário ao corpo do documento (oculto)
-      tempElement.style.opacity = '0'; // Torna invisível
-      tempElement.style.position = 'absolute'; // Garante que não ocupe espaço
-      tempElement.style.left = '-9999px'; // Move para fora da tela (fallback)
-      tempElement.style.zIndex = '-1'; // Garante que não interfira com cliques
+      tempElement.style.position = 'absolute';
+      tempElement.style.left = '-9999px'; // Move para fora da tela
       document.body.appendChild(tempElement);
 
       // Adiciona o cabeçalho ao elemento temporário
@@ -144,7 +142,7 @@ function Relatorios() {
           // Remove o elemento temporário após a geração do PDF
           document.body.removeChild(tempElement);
         });
-      }, 100); // Atraso de 100ms
+      }, 500); // Atraso de 500ms
     }
   };
 
