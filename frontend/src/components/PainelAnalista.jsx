@@ -43,41 +43,49 @@ const PainelAnalista = ({ socket, estado }) => {
         </div>
       )}
 
-      {/* Fila de Espera */}
-      <div className="fila-section">
-        <h2>Fila de Espera</h2>
-        <ul className="list-group">
-          {estado.fila.map((item, index) => (
-            <li key={item.id} className="list-group-item">
-              {index + 1}. {item.nome_analista} {item.case_number && `(Caso: ${item.case_number})`}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <div className="row">
+        {/* Fila de Espera */}
+        <div className="col-md-4">
+          <div className="fila-section">
+            <h2>Fila de Espera</h2>
+            <ul className="list-group">
+              {estado.fila.map((item, index) => (
+                <li key={item.id} className="list-group-item">
+                  {index + 1}. {item.nome_analista} {item.case_number && `(Caso: ${item.case_number})`}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
-      {/* Em Atendimento */}
-      <div className="atendimento-section">
-        <h2>Em Atendimento</h2>
-        <ul className="list-group">
-          {estado.emAtendimento.map((atendimento) => (
-            <li key={atendimento.id} className="list-group-item">
-              <p><strong>Analista:</strong> {atendimento.nome_analista}</p>
-              <p><strong>Consultor:</strong> {atendimento.nome_consultor}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
+        {/* Em Atendimento */}
+        <div className="col-md-4">
+          <div className="atendimento-section">
+            <h2>Em Atendimento</h2>
+            <ul className="list-group">
+              {estado.emAtendimento.map((atendimento) => (
+                <li key={atendimento.id} className="list-group-item">
+                  <p><strong>Analista:</strong> {atendimento.nome_analista}</p>
+                  <p><strong>Consultor:</strong> {atendimento.nome_consultor}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
-      {/* Consultores Disponíveis */}
-      <div className="consultores-section">
-        <h2>Consultores Disponíveis</h2>
-        <ul className="list-group">
-          {estado.consultores.map((consultor) => (
-            <li key={consultor.id} className="list-group-item">
-              {consultor.nome}
-            </li>
-          ))}
-        </ul>
+        {/* Consultores Disponíveis */}
+        <div className="col-md-4">
+          <div className="consultores-section">
+            <h2>Consultores Disponíveis</h2>
+            <ul className="list-group">
+              {estado.consultores.map((consultor) => (
+                <li key={consultor.id} className="list-group-item">
+                  {consultor.nome}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
