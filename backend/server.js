@@ -40,7 +40,7 @@ const emitirEstadoAtual = async (socket = null) => {
         JOIN analistas_atendimento an ON a.analista_id = an.id
         WHERE a.status = 'AGUARDANDO' ORDER BY a.prioridade DESC, a.chegada_em ASC
     `);
-    const [consultores] = await pool.query("SELECT id, nome, meet_link, email, disponivel FROM consultores ORDER BY nome ASC");
+    const [consultores] = await pool.query("SELECT id, nome, meet_link, email, status FROM consultores ORDER BY nome ASC");
     const [emAtendimento] = await pool.query(`
       SELECT a.id, an.nome as nome_analista, c.nome as nome_consultor, a.inicio_em, c.id as consultor_id
       FROM atendimentos a
@@ -104,7 +104,7 @@ io.on('connection', (socket) => {
         }
 
         await pool.query("UPDATE atendimentos SET consultor_id = ?, status = 'EM_ATENDIMENTO', inicio_em = NOW() WHERE id = ?", [consultor_id, proximo.id]);
-        await pool.query("UPDATE consultores SET disponivel = false WHERE id = ?", [consultor_id]);
+        await pool.query("UPDATE consultores SET status = 'em_atendimento' WHERE id = ?", [consultor_id]);
         emitirEstadoAtual();
       }
     } catch (error) { console.error(error); }
@@ -113,7 +113,7 @@ io.on('connection', (socket) => {
   socket.on('finalizarAtendimento', async ({atendimento_id, consultor_id}) => {
     try {
         await pool.query("UPDATE atendimentos SET status = 'FINALIZADO', finalizado_em = NOW() WHERE id = ?", [atendimento_id]);
-        await pool.query("UPDATE consultores SET disponivel = true WHERE id = ?", [consultor_id]);
+        await pool.query("UPDATE consultores SET status = 'disponivel' WHERE id = ?", [consultor_id]);
         emitirEstadoAtual();
     } catch (error) { console.error(error); }
   });
@@ -149,6 +149,22 @@ app.put('/api/consultores/:id', async (req, res) => {
     await pool.query('UPDATE consultores SET nome = ?, meet_link = ?, email = ? WHERE id = ?', [nome, meet_link, email, req.params.id]);
     emitirEstadoAtual();
     res.status(200).send();
+});
+
+app.put('/api/consultores/:id/status', async (req, res) => {
+    const { status } = req.body;
+    const { id } = req.params;
+    if (!['disponivel', 'em_pausa', 'em_atendimento', 'offline'].includes(status)) {
+        return res.status(400).json({ message: 'Status inválido.' });
+    }
+    try {
+        await pool.query('UPDATE consultores SET status = ? WHERE id = ?', [status, id]);
+        emitirEstadoAtual(); // Notifica todos os clientes sobre a mudança de status
+        res.status(200).send();
+    } catch (error) {
+        console.error('Erro ao atualizar status do consultor:', error);
+        res.status(500).json({ message: 'Erro interno do servidor.' });
+    }
 });
 
 app.delete('/api/consultores/:id', async (req, res) => {
