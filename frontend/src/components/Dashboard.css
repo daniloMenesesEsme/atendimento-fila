@@ -38,5 +38,5 @@
 
 .blinking-notification {
     animation: blink-animation 1s infinite;
-    color: #dc3545; /* Cor vermelha do Bootstrap */
+    color: #212529; /* Cor preta (padrão do Bootstrap para texto escuro) */
 }
