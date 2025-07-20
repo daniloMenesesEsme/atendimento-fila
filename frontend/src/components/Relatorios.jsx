@@ -107,9 +107,20 @@ function Relatorios() {
       }
 
       // Adiciona o elemento temporário ao corpo do documento (oculto)
-      tempElement.style.position = 'absolute';
-      tempElement.style.left = '-9999px'; // Move para fora da tela
+      tempElement.style.opacity = '0'; // Torna invisível
+      tempElement.style.zIndex = '-1'; // Garante que não interfira com cliques
       document.body.appendChild(tempElement);
+
+      // Adiciona o cabeçalho ao elemento temporário
+      const reportTitle = "Relatório de Atendimentos Finalizados";
+      const currentDate = new Date().toLocaleDateString('pt-BR');
+      const headerHtml = `
+        <div style="text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
+          <h1 style="margin: 0; font-size: 24px; color: #333;">${reportTitle}</h1>
+          <p style="margin: 5px 0 0; font-size: 14px; color: #666;">Gerado em: ${currentDate}</p>
+        </div>
+      `;
+      tempElement.insertAdjacentHTML('afterbegin', headerHtml);
 
       const opt = {
         margin:       10,
