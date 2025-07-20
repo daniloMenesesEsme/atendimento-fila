@@ -160,6 +160,45 @@ app.delete('/api/analistas/:id', async (req, res) => {
     res.status(204).send();
 });
 
+// Rota para buscar atendimentos com base no status
+app.get('/api/atendimentos', async (req, res) => {
+    const { status } = req.query;
+
+    if (!status) {
+        return res.status(400).json({ message: "O parâmetro 'status' é obrigatório." });
+    }
+
+    try {
+        let query = '';
+        const params = [status];
+
+        if (status === 'AGUARDANDO') {
+            query = `
+                SELECT a.id, an.nome as nome_analista, a.chegada_em, a.prioridade, a.case_number
+                FROM atendimentos a
+                JOIN analistas_atendimento an ON a.analista_id = an.id
+                WHERE a.status = ? ORDER BY a.prioridade DESC, a.chegada_em ASC
+            `;
+        } else if (status === 'EM_ATENDIMENTO') {
+            query = `
+                SELECT a.id, an.nome as nome_analista, c.nome as nome_consultor, a.inicio_em, c.id as consultor_id
+                FROM atendimentos a
+                JOIN consultores c ON a.consultor_id = c.id
+                JOIN analistas_atendimento an ON a.analista_id = an.id
+                WHERE a.status = ?
+            `;
+        } else {
+            return res.status(400).json({ message: "Status inválido." });
+        }
+
+        const [rows] = await pool.query(query, params);
+        res.json(rows);
+    } catch (error) {
+        console.error(`Erro ao buscar atendimentos com status ${status}:`, error);
+        res.status(500).json({ message: "Erro interno do servidor." });
+    }
+});
+
 // Relatórios
 app.get('/api/relatorios/atendimentos', async (req, res) => {
     const { franqueado, consultor, dataInicio, dataFim, page = 1, limit = 10 } = req.query;
