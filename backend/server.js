@@ -258,12 +258,12 @@ app.get('/api/relatorios/atendimentos', async (req, res) => {
         params.push(`%${consultor}%`);
     }
     if (dataInicio) {
-        baseQuery += ` AND a.finalizado_em >= ?`;
-        params.push(`${dataInicio} 00:00:00`);
+        baseQuery += ` AND DATE(a.finalizado_em) >= ?`;
+        params.push(`${dataInicio}`);
     }
     if (dataFim) {
-        baseQuery += ` AND a.finalizado_em <= ?`;
-        params.push(`${dataFim} 23:59:59`);
+        baseQuery += ` AND DATE(a.finalizado_em) <= ?`;
+        params.push(`${dataFim}`);
     }
     if (caseNumber) {
         baseQuery += ` AND a.case_number LIKE ?`;
