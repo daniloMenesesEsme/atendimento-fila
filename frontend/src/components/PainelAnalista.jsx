@@ -73,7 +73,7 @@ const PainelAnalista = ({ socket, estado }) => {
             <ul className="list-group">
               {estado.consultores.map((consultor) => (
                 <li key={consultor.id} className="list-group-item">
-                  {consultor.nome}
+                  {consultor.nome} - <span className={`text-${consultor.status === 'disponivel' ? 'success' : consultor.status === 'em_pausa' ? 'warning' : consultor.status === 'em_atendimento' ? 'danger' : 'secondary'}`}>{consultor.status === 'disponivel' ? 'Disponível' : consultor.status === 'em_pausa' ? 'Em Pausa' : consultor.status === 'em_atendimento' ? 'Em Atendimento' : 'Offline'}</span>
                 </li>
               ))}
             </ul>
