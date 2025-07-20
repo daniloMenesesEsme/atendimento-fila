@@ -12,13 +12,6 @@ const PainelAnalista = ({ socket, estado }) => {
     const handleAtendimentoIniciado = (data) => {
       setNotificationData(data.consultor);
       setShowNotification(true);
-
-      // Notificação desaparece após 10 segundos
-      const timer = setTimeout(() => {
-        setShowNotification(false);
-      }, 10000);
-
-      return () => clearTimeout(timer);
     };
 
     socket.on('atendimento-iniciado', handleAtendimentoIniciado);
@@ -34,7 +27,7 @@ const PainelAnalista = ({ socket, estado }) => {
         <div className="alert alert-success text-center blinking-notification" role="alert">
           <h4>Você está sendo atendido por {notificationData.nome}!</h4>
           <p>Clique no link para entrar na reunião:</p>
-          <a href={notificationData.meet_link} target="_blank" rel="noopener noreferrer" className="btn btn-primary me-2">
+          <a href={notificationData.meet_link} target="_blank" rel="noopener noreferrer" className="btn btn-primary me-2" onClick={() => setShowNotification(false)}>
             Entrar no Meet
           </a>
           <button onClick={() => setShowNotification(false)} className="btn btn-secondary">
