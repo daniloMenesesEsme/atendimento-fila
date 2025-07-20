@@ -38,5 +38,9 @@
 
 .blinking-notification {
     animation: blink-animation 1s infinite;
+}
+
+.blinking-notification h4,
+.blinking-notification p {
     color: #212529; /* Cor preta (padrão do Bootstrap para texto escuro) */
 }
