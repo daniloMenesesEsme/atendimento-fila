@@ -281,6 +281,8 @@ app.get('/api/relatorios/atendimentos', async (req, res) => {
 
     try {
         const [dataRows] = await pool.query(dataQuery, [...params, parseInt(limit), offset]);
+        console.log("Data Query:", dataQuery);
+        console.log("Params:", [...params, parseInt(limit), offset]);
         const [countRows] = await pool.query(countQuery, params);
         const total = countRows[0].total;
 

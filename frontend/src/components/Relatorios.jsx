@@ -50,7 +50,11 @@ function Relatorios() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchRelatorios();
+    if (currentPage === 1) {
+      fetchRelatorios(); // Se já estiver na primeira página, busca diretamente
+    } else {
+      setCurrentPage(1); // Caso contrário, reseta para a primeira página (o useEffect fará a busca)
+    }
   };
 
   const handleClearFilters = () => {
