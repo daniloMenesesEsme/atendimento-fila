@@ -2,7 +2,7 @@
     position: fixed;
     top: 10px;
     right: 10px;
-    background-color: #01376d;
+    background-color: #f8f9fa;
     border: 1px solid #dee2e6;
     padding: 8px 12px;
     border-radius: 5px;
@@ -20,6 +20,7 @@
     display: inline-block;
     margin-right: 8px;
 }
+
 
 .status-ok {
     background-color: #28a745; /* Verde */
