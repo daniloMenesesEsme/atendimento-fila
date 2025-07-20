@@ -14,15 +14,9 @@ import CadastroAnalistas from './components/CadastroAnalistas';
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const socket = io(apiUrl, {
   reconnection: true,
-  reconnectionAttempts: Infinity,
+  reconnectionAttempts: 5,
   reconnectionDelay: 1000,
-  reconnectionDelayMax: 5000,
-  timeout: 20000,
-  transports: ['websocket', 'polling'],
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"]
-  }
+  transports: ['websocket', 'polling']
 });
 
 function App() {
@@ -76,21 +70,6 @@ function App() {
       setDbStatus(false);
     });
 
-    socket.on('connect_error', (error) => {
-      console.error('Erro na conexão Socket.IO:', error);
-      setDbStatus(false);
-    });
-
-    socket.on('reconnect', (attemptNumber) => {
-      console.log('Socket reconectado após', attemptNumber, 'tentativas');
-      checkConnection();
-    });
-
-    socket.on('reconnect_error', (error) => {
-      console.error('Erro na reconexão Socket.IO:', error);
-      setDbStatus(false);
-    });
-
     socket.on('estadoAtualizado', (novoEstado) => {
       console.log('Estado atualizado:', novoEstado);
       setEstado(novoEstado);
@@ -102,9 +81,6 @@ function App() {
       clearInterval(interval);
       socket.off('connect');
       socket.off('disconnect');
-      socket.off('connect_error');
-      socket.off('reconnect');
-      socket.off('reconnect_error');
       socket.off('estadoAtualizado');
     };
   }, []);
