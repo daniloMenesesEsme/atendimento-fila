@@ -67,6 +67,7 @@ function Relatorios() {
   };
 
   const handleGeneratePdf = () => {
+    console.log('Botão Salvar como PDF clicado!');
     const queryParams = new URLSearchParams({
       franqueado: franqueadoFilter,
       consultor: consultorFilter,
