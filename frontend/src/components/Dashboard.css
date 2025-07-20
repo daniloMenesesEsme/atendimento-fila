@@ -2,9 +2,9 @@
     position: fixed;
     top: 10px;
     right: 10px;
-    background-color: #f8f9fa;
-    color: #000; /* Garante que o texto seja preto */
-    border: 1px solid #dee2e6;
+    background-color: #212529; /* Fundo escuro */
+    color: #fff; /* Texto branco para contraste */
+    border: 1px solid #495057; /* Borda mais escura */
     padding: 8px 12px;
     border-radius: 5px;
     font-size: 0.9em;
