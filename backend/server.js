@@ -31,8 +31,9 @@ const pool = mysql.createPool({
 });
 
 // --- Lógica de Negócio e Sockets ---
-const emitirEstadoAtual = async () => {
+const emitirEstadoAtual = async (socket = null) => {
   try {
+    // Lógica para buscar os dados do banco de dados (fila, consultores, emAtendimento)
     const [fila] = await pool.query(`
         SELECT a.id, an.nome as nome_analista, a.chegada_em, a.prioridade, a.case_number
         FROM atendimentos a
@@ -47,7 +48,18 @@ const emitirEstadoAtual = async () => {
       JOIN analistas_atendimento an ON a.analista_id = an.id
       WHERE a.status = 'EM_ATENDIMENTO'
     `);
-    io.emit('estadoAtualizado', { fila, consultores, emAtendimento });
+    
+    const estado = { fila, consultores, emAtendimento };
+
+    if (socket) {
+      // Se um socket específico for fornecido, emite apenas para ele
+      socket.emit('estadoAtualizado', estado);
+      console.log(`Estado enviado para o cliente: ${socket.id}`);
+    } else {
+      // Caso contrário, emite para todos os clientes conectados
+      io.emit('estadoAtualizado', estado);
+      console.log("Estado atualizado enviado para todos os clientes.");
+    }
   } catch (error) {
     console.error("Erro ao emitir estado atual:", error);
   }
@@ -56,7 +68,12 @@ const emitirEstadoAtual = async () => {
 const analistasSockets = {};
 
 io.on('connection', (socket) => {
-  emitirEstadoAtual();
+  console.log(`Cliente conectado: ${socket.id}`);
+  emitirEstadoAtual(socket); // Envia o estado atual para o cliente que acabou de conectar
+
+  socket.on('solicitarEstado', () => {
+    emitirEstadoAtual(socket);
+  });
 
   socket.on('entrarFila', async (data) => {
     try {

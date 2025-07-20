@@ -28,26 +28,11 @@ function App() {
   const [dbStatus, setDbStatus] = useState(false);
   const location = useLocation();
 
-  // Função para verificar o status da conexão e carregar dados iniciais
+  // Função para verificar o status da conexão
   const checkConnection = async () => {
     try {
       const res = await fetch(`${apiUrl}/api/health`);
-      if (res.ok) {
-        setDbStatus(true);
-        // Carregar dados iniciais
-        const [consultoresRes, filaRes, emAtendimentoRes] = await Promise.all([
-          fetch(`${apiUrl}/api/consultores`).then(r => r.json()),
-          fetch(`${apiUrl}/api/atendimentos?status=AGUARDANDO`).then(r => r.json()),
-          fetch(`${apiUrl}/api/atendimentos?status=EM_ATENDIMENTO`).then(r => r.json())
-        ]);
-        setEstado({
-          consultores: consultoresRes,
-          fila: filaRes,
-          emAtendimento: emAtendimentoRes
-        });
-      } else {
-        setDbStatus(false);
-      }
+      setDbStatus(res.ok);
     } catch (error) {
       console.error('Erro ao verificar conexão:', error);
       setDbStatus(false);
@@ -55,14 +40,14 @@ function App() {
   };
 
   useEffect(() => {
-    // Verificar conexão inicialmente e a cada 30 segundos
+    // Verificar conexão inicialmente
     checkConnection();
-    const interval = setInterval(checkConnection, 30000);
 
     // Configurar eventos do socket
     socket.on('connect', () => {
       console.log('Socket conectado');
-      checkConnection();
+      setDbStatus(true);
+      socket.emit('solicitarEstado'); // Solicita o estado atual ao se (re)conectar
     });
 
     socket.on('disconnect', () => {
@@ -71,14 +56,14 @@ function App() {
     });
 
     socket.on('estadoAtualizado', (novoEstado) => {
-      console.log('Estado atualizado:', novoEstado);
+      console.log('Estado atualizado recebido:', novoEstado);
       setEstado(novoEstado);
     });
 
     import('bootstrap/dist/js/bootstrap.bundle.min.js');
 
+    // Limpeza ao desmontar o componente
     return () => {
-      clearInterval(interval);
       socket.off('connect');
       socket.off('disconnect');
       socket.off('estadoAtualizado');
