@@ -108,6 +108,8 @@ function Relatorios() {
 
       // Adiciona o elemento temporário ao corpo do documento (oculto)
       tempElement.style.opacity = '0'; // Torna invisível
+      tempElement.style.position = 'absolute'; // Garante que não ocupe espaço
+      tempElement.style.left = '-9999px'; // Move para fora da tela (fallback)
       tempElement.style.zIndex = '-1'; // Garante que não interfira com cliques
       document.body.appendChild(tempElement);
 
@@ -115,25 +117,34 @@ function Relatorios() {
       const reportTitle = "Relatório de Atendimentos Finalizados";
       const currentDate = new Date().toLocaleDateString('pt-BR');
       const headerHtml = `
-        <div style="text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
-          <h1 style="margin: 0; font-size: 24px; color: #333;">${reportTitle}</h1>
-          <p style="margin: 5px 0 0; font-size: 14px; color: #666;">Gerado em: ${currentDate}</p>
+        <div style="text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; color: #000000;">
+          <h1 style="margin: 0; font-size: 24px; color: #000000;">${reportTitle}</h1>
+          <p style="margin: 5px 0 0; font-size: 14px; color: #000000;">Gerado em: ${currentDate}</p>
         </div>
       `;
       tempElement.insertAdjacentHTML('afterbegin', headerHtml);
 
-      const opt = {
-        margin:       10,
-        filename:     'relatorio_atendimentos.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
-      html2pdf().set(opt).from(tempElement).save().then(() => {
-        // Remove o elemento temporário após a geração do PDF
-        document.body.removeChild(tempElement);
+      // Força a cor do texto para preto em todos os elementos dentro do tempElement
+      const allElements = tempElement.querySelectorAll('*');
+      allElements.forEach(el => {
+        el.style.color = '#000000';
       });
+
+      // Adiciona um pequeno atraso para garantir que o DOM esteja totalmente renderizado
+      setTimeout(() => {
+        const opt = {
+          margin:       10,
+          filename:     'relatorio_atendimentos.pdf',
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2 },
+          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(tempElement).save().then(() => {
+          // Remove o elemento temporário após a geração do PDF
+          document.body.removeChild(tempElement);
+        });
+      }, 100); // Atraso de 100ms
     }
   };
 
