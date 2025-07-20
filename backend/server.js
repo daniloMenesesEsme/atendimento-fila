@@ -258,11 +258,11 @@ app.get('/api/relatorios/atendimentos', async (req, res) => {
         params.push(`%${consultor}%`);
     }
     if (dataInicio) {
-        baseQuery += ` AND DATE(a.finalizado_em) >= ?`;
+        baseQuery += ` AND DATE(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) >= ?`;
         params.push(`${dataInicio}`);
     }
     if (dataFim) {
-        baseQuery += ` AND DATE(a.finalizado_em) <= ?`;
+        baseQuery += ` AND DATE(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) <= ?`;
         params.push(`${dataFim}`);
     }
     if (caseNumber) {
