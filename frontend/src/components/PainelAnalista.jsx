@@ -31,7 +31,7 @@ const PainelAnalista = ({ socket, estado }) => {
   return (
     <div className="dashboard-container">
       {showNotification && (
-        <div className="alert alert-success text-center" role="alert">
+        <div className="alert alert-success text-center blinking-notification" role="alert">
           <h4>Você está sendo atendido por {notificationData.nome}!</h4>
           <p>Clique no link para entrar na reunião:</p>
           <a href={notificationData.meet_link} target="_blank" rel="noopener noreferrer" className="btn btn-primary me-2">
