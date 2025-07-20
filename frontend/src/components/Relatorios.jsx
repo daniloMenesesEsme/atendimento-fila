@@ -69,80 +69,73 @@ function Relatorios() {
   const handleGeneratePdf = () => {
     const element = reportTableRef.current;
     if (element) {
-      // Cria um elemento temporário para a geração do PDF
-      const tempElement = document.createElement('div');
-      tempElement.style.backgroundColor = '#ffffff'; // Fundo branco
-      tempElement.style.color = '#000000'; // Texto preto
-      tempElement.style.padding = '20px';
-      tempElement.style.border = '1px solid #ccc';
-      tempElement.style.width = '100%'; // Garante que o elemento temporário ocupe a largura total
-      tempElement.style.boxSizing = 'border-box'; // Inclui padding e border na largura total
+      // Cria um elemento de cabeçalho
+      const headerDiv = document.createElement('div');
+      headerDiv.style.textAlign = 'center';
+      headerDiv.style.marginBottom = '20px';
+      headerDiv.style.paddingBottom = '10px';
+      headerDiv.style.borderBottom = '1px solid #eee';
+      headerDiv.style.color = '#000000'; // Garante que o texto do cabeçalho seja preto
+      headerDiv.style.backgroundColor = '#ffffff'; // Garante que o fundo do cabeçalho seja branco
 
-      // Copia o conteúdo HTML do elemento original para o temporário
-      tempElement.innerHTML = element.innerHTML;
+      const reportTitle = "Relatório de Atendimentos Finalizados";
+      const currentDate = new Date().toLocaleDateString('pt-BR');
+      headerDiv.innerHTML = `
+        <h1 style="margin: 0; font-size: 24px; color: #000000;">${reportTitle}</h1>
+        <p style="margin: 5px 0 0; font-size: 14px; color: #000000;">Gerado em: ${currentDate}</p>
+      `;
 
-      // Adiciona estilos específicos para a tabela dentro do elemento temporário
-      const table = tempElement.querySelector('table');
+      // Prepend o cabeçalho ao elemento do relatório
+      element.prepend(headerDiv);
+
+      // Aplica estilos temporários diretamente ao elemento a ser capturado
+      element.style.backgroundColor = '#ffffff'; // Força fundo branco para toda a área do relatório
+      element.style.color = '#000000'; // Força texto preto para toda a área do relatório
+
+      // Garante que todos os elementos da tabela também tenham texto preto e fundo branco
+      const table = element.querySelector('table');
       if (table) {
-        table.style.width = '100%';
-        table.style.borderCollapse = 'separate';
-        table.style.borderSpacing = '0 10px';
-        table.style.marginTop = '20px';
-        table.style.textAlign = 'left'; // Alinha o texto à esquerda para melhor leitura no PDF
-
+        table.style.backgroundColor = '#ffffff';
         const ths = table.querySelectorAll('th');
         ths.forEach(th => {
-          th.style.border = '1px solid #ddd';
-          th.style.padding = '8px';
-          th.style.backgroundColor = '#f2f2f2';
           th.style.color = '#000000';
+          th.style.backgroundColor = '#f2f2f2'; // Mantém o fundo do cabeçalho da tabela cinza claro
         });
-
         const tds = table.querySelectorAll('td');
         tds.forEach(td => {
-          td.style.border = '1px solid #ddd';
-          td.style.padding = '8px';
           td.style.color = '#000000';
+          td.style.backgroundColor = '#ffffff'; // Garante que o fundo da célula seja branco
         });
       }
 
-      // Adiciona o elemento temporário ao corpo do documento (oculto)
-      tempElement.style.position = 'absolute';
-      tempElement.style.left = '-9999px'; // Move para fora da tela
-      document.body.appendChild(tempElement);
+      const opt = {
+        margin:       10,
+        filename:     'relatorio_atendimentos.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
 
-      // Adiciona o cabeçalho ao elemento temporário
-      const reportTitle = "Relatório de Atendimentos Finalizados";
-      const currentDate = new Date().toLocaleDateString('pt-BR');
-      const headerHtml = `
-        <div style="text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; color: #000000;">
-          <h1 style="margin: 0; font-size: 24px; color: #000000;">${reportTitle}</h1>
-          <p style="margin: 5px 0 0; font-size: 14px; color: #000000;">Gerado em: ${currentDate}</p>
-        </div>
-      `;
-      tempElement.insertAdjacentHTML('afterbegin', headerHtml);
-
-      // Força a cor do texto para preto em todos os elementos dentro do tempElement
-      const allElements = tempElement.querySelectorAll('*');
-      allElements.forEach(el => {
-        el.style.color = '#000000';
+      // Usa uma Promise para garantir que os estilos sejam aplicados antes da captura e removidos depois
+      html2pdf().set(opt).from(element).save().then(() => {
+        // Remove o cabeçalho e os estilos temporários após a geração do PDF
+        element.removeChild(headerDiv);
+        element.style.backgroundColor = ''; // Reverte fundo
+        element.style.color = ''; // Reverte cor do texto
+        if (table) {
+          table.style.backgroundColor = '';
+          const ths = table.querySelectorAll('th');
+          ths.forEach(th => {
+            th.style.color = '';
+            th.style.backgroundColor = '';
+          });
+          const tds = table.querySelectorAll('td');
+          tds.forEach(td => {
+            td.style.color = '';
+            td.style.backgroundColor = '';
+          });
+        }
       });
-
-      // Adiciona um pequeno atraso para garantir que o DOM esteja totalmente renderizado
-      setTimeout(() => {
-        const opt = {
-          margin:       10,
-          filename:     'relatorio_atendimentos.pdf',
-          image:        { type: 'jpeg', quality: 0.98 },
-          html2canvas:  { scale: 2 },
-          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(tempElement).save().then(() => {
-          // Remove o elemento temporário após a geração do PDF
-          document.body.removeChild(tempElement);
-        });
-      }, 500); // Atraso de 500ms
     }
   };
 
