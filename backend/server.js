@@ -238,7 +238,7 @@ app.get('/api/atendimentos', async (req, res) => {
 
 // Relatórios
 app.get('/api/relatorios/atendimentos', async (req, res) => {
-    const { franqueado, consultor, dataInicio, dataFim, page = 1, limit = 10 } = req.query;
+    const { franqueado, consultor, dataInicio, dataFim, caseNumber, page = 1, limit = 10 } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
 
     let baseQuery = `
@@ -264,6 +264,10 @@ app.get('/api/relatorios/atendimentos', async (req, res) => {
     if (dataFim) {
         baseQuery += ` AND a.finalizado_em <= ?`;
         params.push(`${dataFim} 23:59:59`);
+    }
+    if (caseNumber) {
+        baseQuery += ` AND a.case_number LIKE ?`;
+        params.push(`%${caseNumber}%`);
     }
 
     const dataQuery = `

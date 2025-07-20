@@ -7,6 +7,7 @@ function Relatorios() {
   const [consultorFilter, setConsultorFilter] = useState('');
   const [dataInicioFilter, setDataInicioFilter] = useState('');
   const [dataFimFilter, setDataFimFilter] = useState('');
+  const [caseNumberFilter, setCaseNumberFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10); // Você pode tornar isso configurável se quiser
   const [totalItems, setTotalItems] = useState(0);
@@ -18,6 +19,7 @@ function Relatorios() {
       consultor: consultorFilter,
       dataInicio: dataInicioFilter,
       dataFim: dataFimFilter,
+      caseNumber: caseNumberFilter,
       page: currentPage,
       limit: itemsPerPage,
     }).toString();
@@ -56,6 +58,7 @@ function Relatorios() {
     setConsultorFilter('');
     setDataInicioFilter('');
     setDataFimFilter('');
+    setCaseNumberFilter('');
     fetchRelatorios();
   };
 
@@ -135,6 +138,9 @@ function Relatorios() {
           </div>
           <div className="col-md-3">
             <input type="text" className="form-control" placeholder="Filtrar por Consultor" value={consultorFilter} onChange={(e) => setConsultorFilter(e.target.value)} />
+          </div>
+          <div className="col-md-2">
+            <input type="text" className="form-control" placeholder="Filtrar por Nº do Caso" value={caseNumberFilter} onChange={(e) => setCaseNumberFilter(e.target.value)} />
           </div>
           <div className="col-md-2">
             <input type="date" className="form-control" title="Data Início" value={dataInicioFilter} onChange={(e) => setDataInicioFilter(e.target.value)} />
