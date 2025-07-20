@@ -31,9 +31,9 @@
 
 /* Estilo para a notificação piscando */
 @keyframes blink-animation {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
+    0% { background-color: #d4edda; } /* Cor de fundo padrão do alert-success do Bootstrap */
+    50% { background-color: #ffeeba; } /* Cor de fundo padrão do alert-warning do Bootstrap */
+    100% { background-color: #d4edda; }
 }
 
 .blinking-notification {
