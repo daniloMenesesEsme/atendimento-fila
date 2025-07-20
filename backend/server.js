@@ -40,7 +40,7 @@ const emitirEstadoAtual = async (socket = null) => {
         JOIN analistas_atendimento an ON a.analista_id = an.id
         WHERE a.status = 'AGUARDANDO' ORDER BY a.prioridade DESC, a.chegada_em ASC
     `);
-    const [consultores] = await pool.query("SELECT * FROM consultores ORDER BY nome ASC");
+    const [consultores] = await pool.query("SELECT id, nome, meet_link, email, disponivel FROM consultores ORDER BY nome ASC");
     const [emAtendimento] = await pool.query(`
       SELECT a.id, an.nome as nome_analista, c.nome as nome_consultor, a.inicio_em, c.id as consultor_id
       FROM atendimentos a
