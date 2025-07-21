@@ -399,12 +399,29 @@ app.get('/api/relatorios/atendimentos/export-pdf', async (req, res) => {
         `;
 
         const browser = await puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            executablePath: '/usr/bin/google-chrome' // Tenta usar o Chrome pré-instalado no sistema
+            headless: 'new',
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--no-first-run',
+                '--no-zygote',
+                '--single-process'
+            ]
         });
         const page = await browser.newPage();
         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-        const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+        const pdfBuffer = await page.pdf({ 
+            format: 'A4', 
+            printBackground: true,
+            margin: {
+                top: '20px',
+                right: '20px',
+                bottom: '20px',
+                left: '20px'
+            }
+        });
         await browser.close();
 
         res.setHeader('Content-Type', 'application/pdf');
