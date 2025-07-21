@@ -5,6 +5,7 @@ const { Server } = require("socket.io");
 const cors = require('cors');
 const mysql = require('mysql2/promise');
 const puppeteer = require('puppeteer');
+const ExcelJS = require('exceljs');
 
 const app = express();
 app.use(cors());
@@ -291,6 +292,85 @@ app.get('/api/relatorios/atendimentos', async (req, res) => {
     } catch (error) {
         console.error("Erro ao buscar relatórios paginados:", error);
         res.status(500).json({ message: "Erro interno do servidor ao buscar relatórios." });
+    }
+});
+
+// Nova rota para exportar relatório como Excel
+app.get('/api/relatorios/atendimentos/export-excel', async (req, res) => {
+    const { franqueado, consultor, dataInicio, dataFim, caseNumber } = req.query;
+
+    let baseQuery = `
+        FROM atendimentos a
+        LEFT JOIN consultores c ON a.consultor_id = c.id
+        JOIN analistas_atendimento an ON a.analista_id = an.id
+        WHERE a.status = 'FINALIZADO'
+    `;
+    const params = [];
+
+    if (franqueado) {
+        baseQuery += ` AND an.nome LIKE ?`;
+        params.push(`%${franqueado}%`);
+    }
+    if (consultor) {
+        baseQuery += ` AND c.nome LIKE ?`;
+        params.push(`%${consultor}%`);
+    }
+    if (dataInicio) {
+        baseQuery += ` AND DATE(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) >= ?`;
+        params.push(`${dataInicio}`);
+    }
+    if (dataFim) {
+        baseQuery += ` AND DATE(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) <= ?`;
+        params.push(`${dataFim}`);
+    }
+    if (caseNumber) {
+        baseQuery += ` AND a.case_number LIKE ?`;
+        params.push(`%${caseNumber}%`);
+    }
+
+    const dataQuery = `
+        SELECT a.id, an.nome as nome_atendente, c.nome as nome_consultor, a.chegada_em, a.inicio_em, a.finalizado_em, a.case_number
+        ${baseQuery}
+        ORDER BY a.finalizado_em DESC
+    `;
+
+    try {
+        const [dataRows] = await pool.query(dataQuery, params);
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Relatório de Atendimentos');
+
+        // Definir cabeçalhos da tabela
+        worksheet.columns = [
+            { header: 'Atendente', key: 'nome_atendente', width: 20 },
+            { header: 'Consultor', key: 'nome_consultor', width: 20 },
+            { header: 'Nº do Caso', key: 'case_number', width: 15 },
+            { header: 'Chegada na Fila', key: 'chegada_em', width: 25 },
+            { header: 'Início do Atendimento', key: 'inicio_em', width: 25 },
+            { header: 'Fim do Atendimento', key: 'finalizado_em', width: 25 },
+        ];
+
+        // Adicionar linhas
+        dataRows.forEach(row => {
+            worksheet.addRow({
+                nome_atendente: row.nome_atendente,
+                nome_consultor: row.nome_consultor || '-',
+                case_number: row.case_number || '-',
+                chegada_em: row.chegada_em ? new Date(row.chegada_em).toLocaleString('pt-BR') : '-',
+                inicio_em: row.inicio_em ? new Date(row.inicio_em).toLocaleString('pt-BR') : '-',
+                finalizado_em: row.finalizado_em ? new Date(row.finalizado_em).toLocaleString('pt-BR') : '-',
+            });
+        });
+
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=' + 'relatorio_atendimentos.xlsx');
+
+        await workbook.xlsx.write(res);
+        res.end();
+
+    } catch (error) {
+        console.error("Erro ao gerar Excel do relatório:", error);
+        res.status(500).json({ message: "Erro interno do servidor ao gerar Excel." });
     }
 });
 
