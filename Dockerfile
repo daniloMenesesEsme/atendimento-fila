@@ -8,7 +8,7 @@ COPY backend/package*.json ./
 COPY backend/ ./
 
 # Instala as dependências do Node.js
-RUN npm install
+RUN npm cache clean --force && npm ci
 
 # Define variáveis de ambiente para a aplicação
 ENV PORT=3000
