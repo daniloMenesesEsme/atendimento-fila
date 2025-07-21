@@ -173,3 +173,23 @@ h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, i
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
   border-color: #86b7fe !important;
 }
+
+/* Estilos para as abas de relatório */
+.nav-tabs .nav-link {
+  color: #BBBBBB !important; /* Cor do texto para abas inativas */
+  background-color: #2a2a2a !important; /* Fundo para abas inativas */
+  border-color: #333 !important;
+  margin-right: 5px; /* Espaçamento entre as abas */
+}
+
+.nav-tabs .nav-link.active {
+  color: #FFFFFF !important; /* Cor do texto para aba ativa */
+  background-color: #1e1e1e !important; /* Fundo para aba ativa */
+  border-color: #333 !important;
+  border-bottom-color: #1e1e1e !important; /* Remove a borda inferior para parecer "conectada" ao conteúdo */
+}
+
+.nav-tabs .nav-link:hover {
+  color: #FFFFFF !important; /* Cor do texto ao passar o mouse */
+  background-color: #3a3a3a !important; /* Fundo ao passar o mouse */
+}
