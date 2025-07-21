@@ -296,9 +296,13 @@ app.get('/api/relatorios/atendimentos', async (req, res) => {
 
 // Nova rota para exportar relatório como PDF
 app.get('/api/relatorios/atendimentos/export-pdf', async (req, res) => {
+    console.log('Iniciando geração do PDF...');
     const { franqueado, consultor, dataInicio, dataFim, caseNumber } = req.query;
+    let browser = null;
 
-    let baseQuery = `
+    try {
+        console.log('Buscando dados do relatório...');
+        let baseQuery = `
         FROM atendimentos a
         LEFT JOIN consultores c ON a.consultor_id = c.id
         JOIN analistas_atendimento an ON a.analista_id = an.id
@@ -333,8 +337,8 @@ app.get('/api/relatorios/atendimentos/export-pdf', async (req, res) => {
         ORDER BY a.finalizado_em DESC
     `;
 
-    try {
         const [dataRows] = await pool.query(dataQuery, params);
+        console.log(`Dados encontrados: ${dataRows.length} registros`);
 
         // Construir o HTML do relatório
         const formatarData = (data) => {
@@ -398,7 +402,8 @@ app.get('/api/relatorios/atendimentos/export-pdf', async (req, res) => {
             </html>
         `;
 
-        const browser = await puppeteer.launch({
+        console.log('Iniciando Puppeteer...');
+        browser = await puppeteer.launch({
             headless: 'new',
             args: [
                 '--no-sandbox',
@@ -407,11 +412,21 @@ app.get('/api/relatorios/atendimentos/export-pdf', async (req, res) => {
                 '--disable-gpu',
                 '--no-first-run',
                 '--no-zygote',
-                '--single-process'
+                '--single-process',
+                '--font-render-hinting=none'
             ]
         });
+        console.log('Puppeteer iniciado com sucesso');
+
+        console.log('Criando nova página...');
         const page = await browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+        console.log('Configurando conteúdo HTML...');
+        await page.setContent(htmlContent, { 
+            waitUntil: ['networkidle0', 'domcontentloaded']
+        });
+        console.log('Conteúdo HTML configurado');
+
+        console.log('Gerando PDF...');
         const pdfBuffer = await page.pdf({ 
             format: 'A4', 
             printBackground: true,
@@ -420,17 +435,41 @@ app.get('/api/relatorios/atendimentos/export-pdf', async (req, res) => {
                 right: '20px',
                 bottom: '20px',
                 left: '20px'
-            }
+            },
+            timeout: 60000 // 60 segundos de timeout
         });
-        await browser.close();
+        console.log('PDF gerado com sucesso');
 
+        if (browser) {
+            console.log('Fechando navegador...');
+            await browser.close();
+            console.log('Navegador fechado');
+        }
+
+        console.log('Enviando PDF para o cliente...');
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename=relatorio_atendimentos.pdf');
         res.send(pdfBuffer);
+        console.log('PDF enviado com sucesso');
 
     } catch (error) {
-        console.error("Erro ao gerar PDF do relatório:", error);
-        res.status(500).json({ message: "Erro interno do servidor ao gerar PDF." });
+        console.error("Erro detalhado ao gerar PDF do relatório:", error);
+        console.error("Stack trace:", error.stack);
+        
+        if (browser) {
+            try {
+                await browser.close();
+                console.log('Navegador fechado após erro');
+            } catch (closeError) {
+                console.error('Erro ao fechar navegador:', closeError);
+            }
+        }
+        
+        res.status(500).json({ 
+            message: "Erro interno do servidor ao gerar PDF.",
+            error: error.message,
+            stack: error.stack
+        });
     }
 });
 
