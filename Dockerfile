@@ -1,21 +1,35 @@
 FROM node:18-alpine
 
+# Define o diretório de trabalho
 WORKDIR /app
 
-# Copiar package.json e package-lock.json primeiro
-COPY backend/package*.json ./
+# Define variáveis de ambiente para o Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Copiar o resto dos arquivos
+# Instala o Chromium e outras dependências necessárias para o Puppeteer
+RUN set -x \
+    && apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    udev
+
+# Copia os arquivos da aplicação
+COPY backend/package*.json ./
 COPY backend/ ./
 
-# Instalar dependências
+# Instala as dependências do Node.js
 RUN npm install
 
-# Definir variáveis de ambiente padrão
+# Define variáveis de ambiente para a aplicação
 ENV PORT=3000
 ENV NODE_ENV=production
 
-# Expor a porta que o servidor usa
+# Expõe a porta que o servidor usa
 EXPOSE 3000
 
 # Comando para iniciar o servidor
