@@ -12,7 +12,7 @@ body {
 
 /* Força todos os elementos de texto a serem brancos */
 h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, input, textarea {
-    color: #FFFFFF !important;
+    color: #FFFFFF; /* Removido !important para permitir sobrescrita */
 }
 
 /* Exceções ou ajustes específicos */
