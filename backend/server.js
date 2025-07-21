@@ -366,7 +366,6 @@ app.get('/api/relatorios/atendimentos/export-excel', async (req, res) => {
         res.setHeader('Content-Disposition', 'attachment; filename=' + 'relatorio_atendimentos.xlsx');
 
         await workbook.xlsx.write(res);
-        res.end();
 
     } catch (error) {
         console.error("Erro ao gerar Excel do relatório:", error);
