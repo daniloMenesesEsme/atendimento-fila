@@ -182,7 +182,7 @@ h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, i
   margin-right: 5px; /* Espaçamento entre as abas */
 }
 
-.nav-tabs .nav-link.active {
+.relatorios .nav-tabs .nav-link.active {
   color: #CCCCCC !important; /* Cor do texto para aba ativa (cinza) */
   background-color: #1e1e1e !important; /* Fundo para aba ativa */
   border-color: #333 !important;
