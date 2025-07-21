@@ -398,7 +398,10 @@ app.get('/api/relatorios/atendimentos/export-pdf', async (req, res) => {
             </html>
         `;
 
-        const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const browser = await puppeteer.launch({
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            executablePath: '/usr/bin/google-chrome' // Tenta usar o Chrome pré-instalado no sistema
+        });
         const page = await browser.newPage();
         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
