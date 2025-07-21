@@ -552,6 +552,156 @@ app.get('/api/relatorios/atendimentos/export-pdf', async (req, res) => {
     }
 });
 
+// Nova rota para Relatório de TMA
+app.get('/api/relatorios/tma', async (req, res) => {
+    const { consultor, analista, caseNumber, dataInicio, dataFim, granularity } = req.query;
+
+    let selectClause = '';
+    let groupByClause = '';
+    let orderByClause = '';
+
+    switch (granularity) {
+        case 'daily':
+            selectClause = 'DATE(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) as period,';
+            groupByClause = 'GROUP BY period';
+            orderByClause = 'ORDER BY period ASC';
+            break;
+        case 'weekly':
+            selectClause = 'YEAR(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) as year, WEEK(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) as period,';
+            groupByClause = 'GROUP BY year, period';
+            orderByClause = 'ORDER BY year ASC, period ASC';
+            break;
+        case 'monthly':
+            selectClause = 'YEAR(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) as year, MONTH(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) as period,';
+            groupByClause = 'GROUP BY year, period';
+            orderByClause = 'ORDER BY year ASC, period ASC';
+            break;
+        case 'total':
+        default:
+            selectClause = ''Total' as period,';
+            groupByClause = '';
+            orderByClause = '';
+            break;
+    }
+
+    let baseQuery = `
+        SELECT
+            ${selectClause}
+            AVG(TIMESTAMPDIFF(SECOND, a.inicio_em, a.finalizado_em)) as tma_seconds
+        FROM atendimentos a
+        LEFT JOIN consultores c ON a.consultor_id = c.id
+        JOIN analistas_atendimento an ON a.analista_id = an.id
+        WHERE a.status = 'FINALIZADO'
+    `;
+    const params = [];
+
+    if (consultor) {
+        baseQuery += ` AND c.nome LIKE ?`;
+        params.push(`%${consultor}%`);
+    }
+    if (analista) {
+        baseQuery += ` AND an.nome LIKE ?`;
+        params.push(`%${analista}%`);
+    }
+    if (caseNumber) {
+        baseQuery += ` AND a.case_number LIKE ?`;
+        params.push(`%${caseNumber}%`);
+    }
+    if (dataInicio) {
+        baseQuery += ` AND DATE(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) >= ?`;
+        params.push(`${dataInicio}`);
+    }
+    if (dataFim) {
+        baseQuery += ` AND DATE(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) <= ?`;
+        params.push(`${dataFim}`);
+    }
+
+    const finalQuery = `${baseQuery} ${groupByClause} ${orderByClause}`;
+
+    try {
+        const [rows] = await pool.query(finalQuery, params);
+        res.json(rows);
+    } catch (error) {
+        console.error("Erro ao buscar relatório de TMA:", error);
+        res.status(500).json({ message: "Erro interno do servidor ao buscar relatório de TMA." });
+    }
+});
+
+// Nova rota para Relatório de TME
+app.get('/api/relatorios/tme', async (req, res) => {
+    const { consultor, analista, caseNumber, dataInicio, dataFim, granularity } = req.query;
+
+    let selectClause = '';
+    let groupByClause = '';
+    let orderByClause = '';
+
+    switch (granularity) {
+        case 'daily':
+            selectClause = 'DATE(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) as period,';
+            groupByClause = 'GROUP BY period';
+            orderByClause = 'ORDER BY period ASC';
+            break;
+        case 'weekly':
+            selectClause = 'YEAR(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) as year, WEEK(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) as period,';
+            groupByClause = 'GROUP BY year, period';
+            orderByClause = 'ORDER BY year ASC, period ASC';
+            break;
+        case 'monthly':
+            selectClause = 'YEAR(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) as year, MONTH(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) as period,';
+            groupByClause = 'GROUP BY year, period';
+            orderByClause = 'ORDER BY year ASC, period ASC';
+            break;
+        case 'total':
+        default:
+            selectClause = ''Total' as period,';
+            groupByClause = '';
+            orderByClause = '';
+            break;
+    }
+
+    let baseQuery = `
+        SELECT
+            ${selectClause}
+            AVG(TIMESTAMPDIFF(SECOND, a.chegada_em, a.inicio_em)) as tme_seconds
+        FROM atendimentos a
+        LEFT JOIN consultores c ON a.consultor_id = c.id
+        JOIN analistas_atendimento an ON a.analista_id = an.id
+        WHERE a.status = 'FINALIZADO' AND a.inicio_em IS NOT NULL
+    `;
+    const params = [];
+
+    if (consultor) {
+        baseQuery += ` AND c.nome LIKE ?`;
+        params.push(`%${consultor}%`);
+    }
+    if (analista) {
+        baseQuery += ` AND an.nome LIKE ?`;
+        params.push(`%${analista}%`);
+    }
+    if (caseNumber) {
+        baseQuery += ` AND a.case_number LIKE ?`;
+        params.push(`%${caseNumber}%`);
+    }
+    if (dataInicio) {
+        baseQuery += ` AND DATE(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) >= ?`;
+        params.push(`${dataInicio}`);
+    }
+    if (dataFim) {
+        baseQuery += ` AND DATE(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) <= ?`;
+        params.push(`${dataFim}`);
+    }
+
+    const finalQuery = `${baseQuery} ${groupByClause} ${orderByClause}`;
+
+    try {
+        const [rows] = await pool.query(finalQuery, params);
+        res.json(rows);
+    } catch (error) {
+        console.error("Erro ao buscar relatório de TME:", error);
+        res.status(500).json({ message: "Erro interno do servidor ao buscar relatório de TME." });
+    }
+});
+
 // Rota para remover um analista da fila de espera
 app.delete('/api/atendimentos/:id', async (req, res) => {
     try {
