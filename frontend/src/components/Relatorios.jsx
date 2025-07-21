@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import html2pdf from 'html2pdf.js';
+
 
 function Relatorios() {
   const [atendimentos, setAtendimentos] = useState([]);
@@ -66,8 +66,11 @@ function Relatorios() {
     fetchRelatorios();
   };
 
-  const handleGeneratePdf = () => {
-    console.log('Botão Salvar como PDF clicado!');
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExportExcel = () => {
     const queryParams = new URLSearchParams({
       franqueado: franqueadoFilter,
       consultor: consultorFilter,
@@ -76,30 +79,7 @@ function Relatorios() {
       caseNumber: caseNumberFilter,
     }).toString();
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/relatorios/atendimentos/export-pdf?${queryParams}`)
-      .then(res => {
-        if (!res.ok) {
-          return res.json().then(errorData => {
-            throw new Error(errorData.message || `HTTP error! status: ${res.status}`);
-          });
-        }
-        return res.blob(); // Recebe a resposta como um blob (arquivo)
-      })
-      .then(blob => {
-        // Cria um URL para o blob e inicia o download
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'relatorio_atendimentos.pdf';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-      })
-      .catch(err => {
-        console.error("Erro ao gerar PDF:", err.message);
-        alert("Erro ao gerar PDF: " + err.message);
-      });
+    window.open(`${import.meta.env.VITE_API_URL}/api/relatorios/atendimentos/export-excel?${queryParams}`, '_blank');
   };
 
   const formatarData = (data) => {
@@ -135,8 +115,12 @@ function Relatorios() {
             <button type="button" className="btn btn-secondary w-100" onClick={handleClearFilters}>Limpar</button>
           </div>
           <div className="col-md-2">
-            <button type="button" className="btn btn-success w-100" onClick={handleGeneratePdf}>Salvar como PDF</button>
+            <button type="button" className="btn btn-info w-100" onClick={handlePrint}>Imprimir</button>
           </div>
+          <div className="col-md-2">
+            <button type="button" className="btn btn-success w-100" onClick={handleExportExcel}>Exportar Excel</button>
+          </div>
+          
         </div>
       </form>
 
