@@ -1,10 +1,23 @@
-FROM amir20/docker-alpine-puppeteer
+FROM node:18-alpine
 
 # Define o diretório de trabalho
 WORKDIR /app
 
-# Instala ferramentas de build e Python, necessárias para algumas dependências do Node.js
-RUN apk add --no-cache build-base python3
+# Instala ferramentas de build e Python, e dependências do Puppeteer
+RUN apk add --no-cache \
+    build-base \
+    python3 \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    udev
+
+# Define variáveis de ambiente para o Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Copia os arquivos da aplicação
 COPY backend/package*.json ./
