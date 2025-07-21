@@ -5,11 +5,11 @@ WORKDIR /app
 # Copiar package.json e package-lock.json primeiro
 COPY backend/package*.json ./
 
-# Instalar dependências
-RUN npm install
-
 # Copiar o resto dos arquivos
 COPY backend/ ./
+
+# Instalar dependências
+RUN npm install
 
 # Definir variáveis de ambiente padrão
 ENV PORT=3000
