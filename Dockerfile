@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM amir20/docker-alpine-puppeteer
 
 # Define o diretório de trabalho
 WORKDIR /app
