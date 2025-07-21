@@ -4,6 +4,7 @@ const http = require('http');
 const { Server } = require("socket.io");
 const cors = require('cors');
 const mysql = require('mysql2/promise');
+const puppeteer = require('puppeteer');
 
 const app = express();
 app.use(cors());
