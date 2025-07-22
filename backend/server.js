@@ -108,7 +108,6 @@ io.on('connection', (socket) => {
         await pool.query("UPDATE atendimentos SET consultor_id = ?, status = 'EM_ATENDIMENTO', inicio_em = NOW() WHERE id = ?", [consultor_id, proximo.id]);
         await pool.query("UPDATE consultores SET status = 'em_atendimento' WHERE id = ?", [consultor_id]);
         emitirEstadoAtual();
-      }
     } catch (error) { console.error(error); }
   });
 
@@ -562,17 +561,17 @@ app.get('/api/relatorios/tma', async (req, res) => {
 
     switch (granularity) {
         case 'daily':
-            selectClause = 'DATE(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) as period,';
+            selectClause = 'DATE(CONVERT_TZ(a.finalizado_em, \'UTC\', \'America/Sao_Paulo\')) as period,';
             groupByClause = 'GROUP BY period';
             orderByClause = 'ORDER BY period ASC';
             break;
         case 'weekly':
-            selectClause = 'YEAR(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) as year, WEEK(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) as period,';
+            selectClause = 'YEAR(CONVERT_TZ(a.finalizado_em, \'UTC\', \'America/Sao_Paulo\')) as year, WEEK(CONVERT_TZ(a.finalizado_em, \'UTC\', \'America/Sao_Paulo\')) as period,';
             groupByClause = 'GROUP BY year, period';
             orderByClause = 'ORDER BY year ASC, period ASC';
             break;
         case 'monthly':
-            selectClause = 'YEAR(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) as year, MONTH(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) as period,';
+            selectClause = 'YEAR(CONVERT_TZ(a.finalizado_em, \'UTC\', \'America/Sao_Paulo\')) as year, MONTH(CONVERT_TZ(a.finalizado_em, \'UTC\', \'America/Sao_Paulo\')) as period,';
             groupByClause = 'GROUP BY year, period';
             orderByClause = 'ORDER BY year ASC, period ASC';
             break;
@@ -608,11 +607,11 @@ app.get('/api/relatorios/tma', async (req, res) => {
         params.push(`%${caseNumber}%`);
     }
     if (dataInicio) {
-        baseQuery += ` AND DATE(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) >= ?`;
+        baseQuery += ` AND DATE(CONVERT_TZ(a.finalizado_em, \'UTC\', \'America/Sao_Paulo\')) >= ?`;
         params.push(`${dataInicio}`);
     }
     if (dataFim) {
-        baseQuery += ` AND DATE(CONVERT_TZ(a.finalizado_em, 'UTC', 'America/Sao_Paulo')) <= ?`;
+        baseQuery += ` AND DATE(CONVERT_TZ(a.finalizado_em, \'UTC\', \'America/Sao_Paulo\')) <= ?`;
         params.push(`${dataFim}`);
     }
 
@@ -637,17 +636,17 @@ app.get('/api/relatorios/tme', async (req, res) => {
 
     switch (granularity) {
         case 'daily':
-            selectClause = 'DATE(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) as period,';
+            selectClause = 'DATE(CONVERT_TZ(a.chegada_em, \'UTC\', \'America/Sao_Paulo\')) as period,';
             groupByClause = 'GROUP BY period';
             orderByClause = 'ORDER BY period ASC';
             break;
         case 'weekly':
-            selectClause = 'YEAR(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) as year, WEEK(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) as period,';
+            selectClause = 'YEAR(CONVERT_TZ(a.chegada_em, \'UTC\', \'America/Sao_Paulo\')) as year, WEEK(CONVERT_TZ(a.chegada_em, \'UTC\', \'America/Sao_Paulo\')) as period,';
             groupByClause = 'GROUP BY year, period';
             orderByClause = 'ORDER BY year ASC, period ASC';
             break;
         case 'monthly':
-            selectClause = 'YEAR(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) as year, MONTH(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) as period,';
+            selectClause = 'YEAR(CONVERT_TZ(a.chegada_em, \'UTC\', \'America/Sao_Paulo\')) as year, MONTH(CONVERT_TZ(a.chegada_em, \'UTC\', \'America/Sao_Paulo\')) as period,';
             groupByClause = 'GROUP BY year, period';
             orderByClause = 'ORDER BY year ASC, period ASC';
             break;
@@ -683,11 +682,11 @@ app.get('/api/relatorios/tme', async (req, res) => {
         params.push(`%${caseNumber}%`);
     }
     if (dataInicio) {
-        baseQuery += ` AND DATE(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) >= ?`;
+        baseQuery += ` AND DATE(CONVERT_TZ(a.chegada_em, \'UTC\', \'America/Sao_Paulo\')) >= ?`;
         params.push(`${dataInicio}`);
     }
     if (dataFim) {
-        baseQuery += ` AND DATE(CONVERT_TZ(a.chegada_em, 'UTC', 'America/Sao_Paulo')) <= ?`;
+        baseQuery += ` AND DATE(CONVERT_TZ(a.chegada_em, \'UTC\', \'America/Sao_Paulo\')) <= ?`;
         params.push(`${dataFim}`);
     }
 
