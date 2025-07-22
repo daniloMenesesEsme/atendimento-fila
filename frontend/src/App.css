@@ -72,7 +72,20 @@ h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, i
 .form-control, .form-select {
     background-color: #2a2a2a !important;
     border-color: #444 !important;
+}
+
+/* Regra específica para a cor do texto dos inputs */
+.form-control {
     color: #FFFFFF !important; /* Garante que o texto dentro do input seja branco */
+    -webkit-text-fill-color: #FFFFFF !important; /* Para navegadores WebKit */
+    opacity: 1 !important; /* Garante que o texto não esteja transparente */
+}
+
+/* Regra ainda mais específica para inputs dentro de cards */
+.card .form-control {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    opacity: 1 !important;
 }
 
 .form-control::placeholder {
