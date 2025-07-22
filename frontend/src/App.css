@@ -72,6 +72,7 @@ h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, i
 .form-control, .form-select {
     background-color: #2a2a2a !important;
     border-color: #444 !important;
+    color: #FFFFFF !important; /* Garante que o texto dentro do input seja branco */
 }
 
 .form-control::placeholder {
