@@ -291,7 +291,7 @@ app.get('/api/relatorios/atendimentos', async (req, res) => {
         res.json({ data: dataRows, total });
     } catch (error) {
         console.error("Erro ao buscar relatórios paginados:", error);
-        res.status(500).json({ message: "Erro interno do servidor ao buscar relatórios." });
+        res.status(500).json({ message: "Erro interno do servidor." });
     }
 });
 
@@ -527,7 +527,7 @@ app.get('/api/relatorios/atendimentos/export-pdf', async (req, res) => {
 
         console.log('Enviando PDF para o cliente...');
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename=relatorio_atendimentos.pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=' + 'relatorio_atendimentos.pdf');
         res.send(pdfBuffer);
         console.log('PDF enviado com sucesso');
 
