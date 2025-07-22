@@ -578,7 +578,7 @@ app.get('/api/relatorios/tma', async (req, res) => {
             break;
         case 'total':
         default:
-            selectClause = ''Total' as period,';
+            selectClause = `'Total' as period,`;
             groupByClause = '';
             orderByClause = '';
             break;
@@ -653,7 +653,7 @@ app.get('/api/relatorios/tme', async (req, res) => {
             break;
         case 'total':
         default:
-            selectClause = ''Total' as period,';
+            selectClause = `'Total' as period,`;
             groupByClause = '';
             orderByClause = '';
             break;
