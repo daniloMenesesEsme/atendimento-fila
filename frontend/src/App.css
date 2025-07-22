@@ -51,6 +51,7 @@ h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, i
 .list-group-item {
     background-color: #2a2a2a !important;
     border-color: #333 !important;
+    color: #FFFFFF !important; /* Garante que o texto dentro do item da lista seja branco */
 }
 
 /* Alinhamento para itens que devem ficar à esquerda dentro de um container centralizado */
@@ -72,6 +73,7 @@ h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, i
 .form-control, .form-select {
     background-color: #2a2a2a !important;
     border-color: #444 !important;
+    color: #FFFFFF !important; /* Garante que o texto digitado seja branco */
 }
 
 .form-control::placeholder {
@@ -165,6 +167,11 @@ h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, i
   border-color: #ced4da !important;
 }
 
+.modal-body .form-control option {
+  color: #212529; /* Garante que as opções do select no modal sejam escuras */
+}
+
+
 .modal-body .form-control::placeholder {
   color: #6c757d !important; /* Placeholder cinza escuro */
 }
@@ -180,6 +187,12 @@ h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, i
   background-color: #2a2a2a !important; /* Fundo para abas inativas */
   border-color: #333 !important;
   margin-right: 5px; /* Espaçamento entre as abas */
+}
+
+/* Adicionado para garantir a cor das opções do select */
+.form-select option {
+  background: #2a2a2a;
+  color: #FFFFFF;
 }
 
 .relatorios .nav-tabs .nav-link.active {
