@@ -192,18 +192,34 @@ h1, h2, h3, h4, h5, h6, p, span, a, li, div, strong, em, small, label, select, i
 
 /* Regras específicas para inputs em modais - garante visibilidade do texto */
 .modal .modal-body input.form-control,
-.modal .modal-body .form-control {
+.modal .modal-body .form-control,
+.modal-body input[type="text"],
+.modal-body .form-control,
+div.modal input.form-control {
   background-color: #FFFFFF !important; /* Fundo branco */
-  color: #212529 !important; /* Texto preto */
+  color: #000000 !important; /* Texto preto mais forte */
   border: 1px solid #ced4da !important;
+  -webkit-text-fill-color: #000000 !important; /* Para Safari */
 }
 
 .modal .modal-body input.form-control:focus,
-.modal .modal-body .form-control:focus {
+.modal .modal-body .form-control:focus,
+.modal-body input[type="text"]:focus,
+.modal-body .form-control:focus,
+div.modal input.form-control:focus {
   background-color: #FFFFFF !important; /* Mantém fundo branco ao focar */
-  color: #212529 !important; /* Mantém texto preto ao focar */
+  color: #000000 !important; /* Mantém texto preto ao focar */
   border-color: #86b7fe !important;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+  -webkit-text-fill-color: #000000 !important; /* Para Safari */
+}
+
+/* Força a cor do texto em todos os inputs dentro de modais */
+.modal input,
+.modal textarea,
+.modal select {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
 }
 
 .modal-body .form-control:focus {
