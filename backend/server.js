@@ -108,6 +108,7 @@ io.on('connection', (socket) => {
         await pool.query("UPDATE atendimentos SET consultor_id = ?, status = 'EM_ATENDIMENTO', inicio_em = NOW() WHERE id = ?", [consultor_id, proximo.id]);
         await pool.query("UPDATE consultores SET status = 'em_atendimento' WHERE id = ?", [consultor_id]);
         emitirEstadoAtual();
+      }
     } catch (error) { console.error(error); }
   });
 
