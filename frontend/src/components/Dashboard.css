@@ -45,5 +45,5 @@
 .blinking-notification,
 .blinking-notification h4,
 .blinking-notification p {
-    color: #000000 !important; /* Força a cor do texto para preto */
+    color: #f9f8f8 !important; /* Força a cor do texto para preto */
 }
